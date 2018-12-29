@@ -28,6 +28,7 @@ const user = {
     // 登录
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
+      console.log('当前登录的用户名：' + username)
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
           const data = response.data

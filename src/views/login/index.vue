@@ -1,12 +1,21 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-      <h3 class="title">vue-admin-template</h3>
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left" size="medium">
+      <h2 class="title">北  京  林  业  大  学</h2>
+      <h3 class="title">教学成果及教务信息统计系统</h3>
+
+      <el-form-item label="登录类型" prop="type">
+        <el-radio-group v-model="loginForm.type">
+          <el-radio label="teacher">教师登录</el-radio>
+          <el-radio label="student">学生登录</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="username" />
+        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="请输入工号或学号" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
@@ -59,7 +68,8 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: 'admin'
+        password: 'admin',
+        type: 'teacher'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -153,7 +163,7 @@ $light_gray:#eee;
     position: absolute;
     left: 0;
     right: 0;
-    width: 520px;
+    width: 550px;
     max-width: 100%;
     padding: 35px 35px 15px 35px;
     margin: 120px auto;
@@ -176,7 +186,7 @@ $light_gray:#eee;
     display: inline-block;
   }
   .title {
-    font-size: 26px;
+    font-size: 35px;
     font-weight: 400;
     color: $light_gray;
     margin: 0px auto 40px auto;
