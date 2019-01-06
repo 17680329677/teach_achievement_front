@@ -44,7 +44,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/college/index',
     name: 'collegeinfo',
-    meta: { title: '学院', icon: 'example' },
+    meta: { title: '学院', icon: 'example', roles: ['sadmin'] },
     children: [
       {
         path: 'index',
@@ -60,7 +60,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/secretary/index',
     name: 'secretary',
-    meta: { title: '教务秘书', icon: 'example' },
+    meta: { title: '教务秘书', icon: 'example', roles: ['sadmin'] },
     children: [
       {
         path: 'index',
@@ -76,8 +76,20 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/secretary/bookclass',
     name: 'rank',
-    meta: { title: '信息配置', icon: 'nested' },
+    meta: { title: '信息配置', icon: 'nested', roles: ['sadmin'] },
     children: [
+      {
+        path: 'innovation',
+        name: 'innovation',
+        component: () => import('@/views/sadmin_college/rank/innovation'),
+        meta: { title: '大创等级配置', icon: 'form' }
+      },
+      {
+        path: 'teachreform',
+        name: 'teachreform',
+        component: () => import('@/views/sadmin_college/rank/teachreform'),
+        meta: { title: '教改项目配置', icon: 'form' }
+      },
       {
         path: 'bookclass',
         name: 'book',
@@ -96,6 +108,43 @@ export const asyncRouterMap = [
         component: () => import('@/views/sadmin_college/rank/titleRank'),
         meta: { title: '教师职称配置', icon: 'form' }
       },
+      {
+        path: 'teacher',
+        name: 'teacher',
+        component: () => import('@/views/sadmin_college/rank/teacher/index'),
+        redirect: '/rank/teacher/title',
+        meta: { title: '教师配置', icon: 'form' },
+        children: [
+          {
+            path: 'title',
+            name: 'Menu1-1',
+            component: () => import('@/views/sadmin_college/rank/teacher/title/index'),
+            meta: { title: '教师职称管理' }
+          },
+          {
+            path: 'type',
+            name: 'Menu1-2',
+            component: () => import('@/views/sadmin_college/rank/teacher/type/index'),
+            meta: { title: '教师类型管理' }
+          },
+        ]
+      },
+    ]
+  },
+
+  {
+    path: '/semester',
+    component: Layout,
+    redirect: '/semester/index',
+    name: 'semester',
+    meta: { title: '学期管理', icon: 'example', roles: ['sadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'semestermanage',
+        component: () => import('@/views/sadmin_college/semester'),
+        meta: { title: '学期配置', icon: 'list' }
+      }
     ]
   },
 

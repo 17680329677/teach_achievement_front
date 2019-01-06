@@ -17,6 +17,7 @@
         </span>
         <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="请输入工号或学号" />
       </el-form-item>
+
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -32,6 +33,7 @@
           <svg-icon icon-class="eye" />
         </span>
       </el-form-item>
+
       <el-form-item>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
           Sign in
@@ -73,7 +75,8 @@ export default {
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
+        password: [{ required: true, trigger: 'blur', validator: validatePass }],
+        type: [{required: true, trigger: 'blur'}]
       },
       loading: false,
       pwdType: 'password',
