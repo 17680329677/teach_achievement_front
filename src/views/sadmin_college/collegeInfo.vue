@@ -3,50 +3,51 @@
   <div class="app-container">
     <div class="filter-container">
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加</el-button>
+      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="addTip">添加</el-button>
       <br/><br/>
     </div>
 
-    <el-table :data="tableData" style="width: 100%" border>
+    <el-table :data="tableData.slice((currentPage-1)*pageSize, currentPage*pageSize)" style="width: 100%" border>
+
       <el-table-column label="序号" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">1</span>
+          <span style="margin-left: 10px">{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="学院名称" width="180">
+      <el-table-column label="学院名称" width="250">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">信息学院</span>
+          <span style="margin-left: 10px">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="学院编号" width="180">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">10010</span>
+          <span style="margin-left: 10px">{{ scope.row.college_id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="教务秘书" width="180">
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: 杜何哲</p>
-            <p>联系电话: 010-588020200</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">杜何哲</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
+      <!--<el-table-column label="教务秘书" width="180">-->
+        <!--<template slot-scope="scope">-->
+          <!--<el-popover trigger="hover" placement="top">-->
+            <!--<p>姓名: {{ scope.row[3] }}</p>-->
+            <!--<p>联系电话: {{ scope.row[4] }}</p>-->
+            <!--<div slot="reference" class="name-wrapper">-->
+              <!--<el-tag size="medium">{{ scope.row[3] }}</el-tag>-->
+            <!--</div>-->
+          <!--</el-popover>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
 
       <el-table-column label="教研室数量" width="180">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">6</span>
+          <span style="margin-left: 10px">{{ scope.row.department_num }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="教师人数" width="180">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">88</span>
+          <span style="margin-left: 10px">{{ scope.row.teacher_num }}</span>
         </template>
       </el-table-column>
 
@@ -62,35 +63,65 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            @click="deleteCollege(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <div class="filter-container">
+      <el-pagination
+        style="margin-left: 10px; text-align: center; float: right; margin-top: 15px"
+        background
+        layout="prev, pager, next"
+        :total=this.tableData.length
+        :page-size="9"
+        @current-change="handleCurrentChange"
+        @size_change="">
+      </el-pagination>
+    </div>
+
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
+      <el-form :model="editForm">
+        <el-form-item label="学院名称" :label-width="formLabelWidth">
+          <el-input v-model="editForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="学院编号" :label-width="formLabelWidth">
+          <el-input v-model="editForm.college_id" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="教研室数量" :label-width="formLabelWidth">
+          <el-input v-model="editForm.department_num" autocomplete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="教师人数" :label-width="formLabelWidth">
+          <el-input v-model="editForm.teacher_num" autocomplete="off" :disabled="true"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="syncClick">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
+    import { getAllCollegeInfo, collegeUpdate, collegeDelete, collegeAdd } from '../../api/college';
     export default {
       name: "collegeInfo",
       data() {
         return {
-          tableData: [{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-          }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-          }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-          }, {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-          }]
+          tableData: [],
+          currentPage: 1,
+          pageSize: 9,
+          dialogFormVisible: false,
+          dialogTitle: '编辑',
+          formLabelWidth: '120px',
+          editForm: {
+            id: '',
+            name: '',
+            department_num: '',
+            teacher_num: ''
+          }
         }
       },
       methods: {
@@ -99,7 +130,100 @@
         },
         handleDelete(index, row) {
           console.log(index, row);
+        },
+        getCollegeInfo: function () {
+          getAllCollegeInfo().then(res => {
+            this.tableData = res.data;
+            console.log(res.data);
+          })
+        },
+
+        handleCurrentChange(cpage){
+          this.currentPage = cpage;
+        },
+
+        deleteCollege(index, row) {
+          this.editForm = Object.assign({}, row)
+          this.$confirm('此操作将永久删除学院, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            collegeDelete(this.editForm.id).then(res => {
+              if (res.status == 'success'){
+                this.$message({
+                  message: '删除成功！',
+                  type: 'success'
+                });
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+        },
+
+        handleEdit: function (index, row) {
+          this.editForm = Object.assign({}, row);
+          this.dialogFormVisible = true;
+          this.dialogTitle = '编辑';
+        },
+
+        update: function() {
+          collegeUpdate(this.editForm.id, this.editForm.name, this.editForm.college_id).then(res => {
+            if (res.status == 'success'){
+              this.dialogFormVisible = false;
+              this.$message({
+                message: res.reason,
+                type: 'success'
+              });
+              window.reload();
+            } else {
+              this.$message({
+                message: res.reason,
+                type: 'warning'
+              });
+            }
+          })
+        },
+
+        addCollege: function () {
+          // this.dialogFormVisible = true;
+          collegeAdd(this.editForm.name, this.editForm.college_id).then(res => {
+            if (res.status == 'success'){
+              this.dialogFormVisible = false;
+              this.$message({
+                message: '添加成功！',
+                type: 'success'
+              });
+            }else {
+              this.$message({
+                message: res.reason,
+                type: 'warning'
+              });
+            }
+          })
+        },
+
+        addTip: function() {
+          this.dialogFormVisible = true;
+          this.dialogTitle = '添加';
+        },
+
+        syncClick: function () {
+          if (this.dialogTitle == '编辑') {
+            this.update();
+          } else if (this.dialogTitle == '添加') {
+            this.addCollege();
+          }
         }
+
+      },
+
+      mounted: function () {
+        this.getCollegeInfo();
       }
     }
 </script>
