@@ -11,7 +11,7 @@
 
       <el-table-column label="序号" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.id }}</span>
+          <span style="margin-left: 10px">{{ scope.$index+1 }}</span>
         </template>
       </el-table-column>
 
@@ -27,17 +27,6 @@
         </template>
       </el-table-column>
 
-      <!--<el-table-column label="教务秘书" width="180">-->
-        <!--<template slot-scope="scope">-->
-          <!--<el-popover trigger="hover" placement="top">-->
-            <!--<p>姓名: {{ scope.row[3] }}</p>-->
-            <!--<p>联系电话: {{ scope.row[4] }}</p>-->
-            <!--<div slot="reference" class="name-wrapper">-->
-              <!--<el-tag size="medium">{{ scope.row[3] }}</el-tag>-->
-            <!--</div>-->
-          <!--</el-popover>-->
-        <!--</template>-->
-      <!--</el-table-column>-->
 
       <el-table-column label="教研室数量" width="180">
         <template slot-scope="scope">
@@ -59,7 +48,7 @@
           <el-button
             size="mini"
             type="info"
-            @click="handleDelete(scope.$index, scope.row)">详情</el-button>
+            @click="">详情</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -83,16 +72,16 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm">
         <el-form-item label="学院名称" :label-width="formLabelWidth">
-          <el-input v-model="editForm.name" autocomplete="off"></el-input>
+          <el-input v-model="editForm.name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="学院编号" :label-width="formLabelWidth">
-          <el-input v-model="editForm.college_id" autocomplete="off"></el-input>
+          <el-input v-model="editForm.college_id" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="教研室数量" :label-width="formLabelWidth">
-          <el-input v-model="editForm.department_num" autocomplete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.department_num" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="教师人数" :label-width="formLabelWidth">
-          <el-input v-model="editForm.teacher_num" autocomplete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.teacher_num" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -105,8 +94,9 @@
 </template>
 
 <script>
-    import { getAllCollegeInfo, collegeUpdate, collegeDelete, collegeAdd } from '../../api/college';
+    import { getAllCollegeInfo, collegeUpdate, collegeDelete, collegeAdd } from '../../api/sadmin/college';
     export default {
+      inject: ['reload'],
       name: "collegeInfo",
       data() {
         return {
@@ -125,12 +115,6 @@
         }
       },
       methods: {
-        handleEdit(index, row) {
-          console.log(index, row);
-        },
-        handleDelete(index, row) {
-          console.log(index, row);
-        },
         getCollegeInfo: function () {
           getAllCollegeInfo().then(res => {
             this.tableData = res.data;
@@ -155,6 +139,7 @@
                   message: '删除成功！',
                   type: 'success'
                 });
+                this.reload();
               }
             })
           }).catch(() => {
@@ -179,7 +164,7 @@
                 message: res.reason,
                 type: 'success'
               });
-              window.reload();
+              this.reload();
             } else {
               this.$message({
                 message: res.reason,

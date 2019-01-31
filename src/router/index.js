@@ -39,6 +39,7 @@ export const constantRouterMap = [
 ]
 
 export const asyncRouterMap = [
+  // 校级管理员路由配置------------------------------------------------------------------
   {
     path: '/college',
     component: Layout,
@@ -144,6 +145,148 @@ export const asyncRouterMap = [
         name: 'semestermanage',
         component: () => import('@/views/sadmin_college/semester'),
         meta: { title: '学期配置', icon: 'list' }
+      }
+    ]
+  },
+
+  // 院级教务秘书路由配置----------------------------------------------------------------------
+  {
+    path: '/department',
+    component: Layout,
+    redirect: '/department/index',
+    name: 'department',
+    meta: { title: '教研室(系)管理', icon: 'example', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'departmentmanage',
+        component: () => import('@/views/cadmin/department'),
+        meta: { title: '教研室(系)管理', icon: 'department' }
+      }
+    ]
+  },
+
+  {
+    path: '/teacher',
+    component: Layout,
+    redirect: '/secretary/bookclass',
+    name: 'rank',
+    meta: { title: '教师管理', icon: 'peoples', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'info',
+        name: 'info',
+        component: () => import('@/views/cadmin/teacher/teacher_info'),
+        meta: { title: '教师信息', icon: 'form' }
+      },
+      {
+        path: 'titlegranted',
+        name: 'titlegranted',
+        component: () => import('@/views/cadmin/teacher/title_granted'),
+        meta: { title: '职称授予', icon: 'form' }
+      }
+    ]
+  },
+
+  {
+    path: '/book',
+    component: Layout,
+    redirect: '/book/index',
+    name: 'book',
+    meta: { title: '教材出版审核', icon: 'book', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'book_published',
+        component: () => import('@/views/cadmin/book'),
+        meta: { title: '教材出版审核', icon: 'book' }
+      }
+    ]
+  },
+
+  {
+    path: '/teach_reform',
+    component: Layout,
+    redirect: '/teach_reform/index',
+    name: 'teach_reform',
+    meta: { title: '教改项目', icon: 'project', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'teach_reform',
+        component: () => import('@/views/cadmin/teach_reform'),
+        meta: { title: '教改项目', icon: 'project' }
+      }
+    ]
+  },
+
+  {
+    path: '/reform_paper',
+    component: Layout,
+    redirect: '/reform_paper/index',
+    name: 'reform_paper',
+    meta: { title: '教改论文', icon: 'paper', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'reform_paper',
+        component: () => import('@/views/cadmin/reform_paper'),
+        meta: { title: '教改论文', icon: 'paper' }
+      }
+    ]
+  },
+
+  {
+    path: '/innovation',
+    component: Layout,
+    redirect: '/innovation/index',
+    name: 'innovation',
+    meta: { title: '大创项目', icon: 'innovation', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'innovation',
+        component: () => import('@/views/cadmin/innovation'),
+        meta: { title: '大创项目', icon: 'innovation' }
+      }
+    ]
+  },
+
+  {
+    path: '/invigilate',
+    component: Layout,
+    redirect: '/invigilate/verify',
+    name: 'rank',
+    meta: { title: '监考信息管理', icon: 'invigilate', roles: ['cadmin'] },
+    children: [
+      {
+        path: 'verify',
+        name: 'verify',
+        component: () => import('@/views/cadmin/invigilate/verify'),
+        meta: { title: '信息审核', icon: 'form' }
+      },
+      {
+        path: 'statistics',
+        name: 'statistics',
+        component: () => import('@/views/cadmin/invigilate/statistics'),
+        meta: { title: '信息统计', icon: 'form' }
+      }
+    ]
+  },
+
+  // 普通教师路由配置---------------------------------------------------------------------
+  {
+    path: '/teach_reform',
+    component: Layout,
+    redirect: '/teach_reform/index',
+    name: 'teach_reform',
+    meta: { title: '教改项目', icon: 'project', roles: ['normal'] },
+    children: [
+      {
+        path: 'index',
+        name: 'teach_reform',
+        component: () => import('@/views/normal/teach_reform'),
+        meta: { title: '教改项目', icon: 'project' }
       }
     ]
   },

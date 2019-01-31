@@ -31,3 +31,15 @@ export function validatAlphabets(str) {
   const reg = /^[A-Za-z]+$/
   return reg.test(str)
 }
+
+/* 手机号验证 */
+export function isValidatePhone(str) {
+  const reg = /^1[3456789]\d{9}$/;
+  return reg.test(str);
+}
+
+/* 邮箱验证 */
+export function isValidateEmail(str) {
+  const reg=/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+  return reg.test(str);
+}
