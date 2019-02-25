@@ -43,3 +43,9 @@ export function isValidateEmail(str) {
   const reg=/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
   return reg.test(str);
 }
+
+/* 判空验证 */
+export function isEmpty(str) {
+  const reg = /^\s*$/g;
+  return reg.test(str);
+}

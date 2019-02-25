@@ -2,14 +2,14 @@ import request from '@/utils/request'
 
 export function getAllCollegeInfo() {
   return request({
-    url: '/college/index',
+    url: '/sadmin/college/index',
     method: 'get',
   })
 }
 
 export function collegeUpdate(id, college_name, college_id) {
   return request({
-    url: '/college/update',
+    url: '/sadmin/college/update',
     method: 'post',
     data: {
       id: id,
@@ -21,7 +21,7 @@ export function collegeUpdate(id, college_name, college_id) {
 
 export function collegeDelete(id) {
   return request({
-    url: '/college/delete',
+    url: '/sadmin/college/delete',
     method: 'post',
     data: {
       id: id
@@ -31,7 +31,7 @@ export function collegeDelete(id) {
 
 export function collegeAdd(college_name, college_id) {
   return request({
-    url: '/college/add',
+    url: '/sadmin/college/add',
     method: 'post',
     data: {
       college_name: college_name,

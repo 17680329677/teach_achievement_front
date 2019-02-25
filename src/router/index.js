@@ -284,9 +284,31 @@ export const asyncRouterMap = [
     children: [
       {
         path: 'index',
-        name: 'teach_reform',
+        name: 'teach_reform_index',
         component: () => import('@/views/normal/teach_reform'),
         meta: { title: '教改项目', icon: 'project' }
+      }
+    ]
+  },
+
+  {
+    path: '/book',
+    component: Layout,
+    redirect: '/book/list',
+    name: 'book',
+    meta: { title: '教材管理', icon: 'book', roles: ['normal'] },
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        component: () => import('@/views/normal/book/list'),
+        meta: { title: '教材信息', icon: 'booklist' }
+      },
+      {
+        path: 'create',
+        name: 'create',
+        component: () => import('@/views/normal/book/create'),
+        meta: { title: '增加教材', icon: 'add' }
       }
     ]
   },

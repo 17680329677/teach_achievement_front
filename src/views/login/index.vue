@@ -69,7 +69,7 @@ export default {
     }
     return {
       loginForm: {
-        username: '7180278',
+        username: '7180266',
         password: '123456',
         type: 'teacher'
       },

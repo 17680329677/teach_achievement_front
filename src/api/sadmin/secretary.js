@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getAllSecretaryInfo() {
   return request({
-    url: '/secretary/index',
+    url: '/sadmin/secretary/index',
     method: 'get'
   })
 }
@@ -10,7 +10,7 @@ export function getAllSecretaryInfo() {
 // 撤销老师的教务秘书职位
 export function recallSecretary(id) {
   return request({
-    url: '/secretary/recall',
+    url: '/sadmin/secretary/recall',
     method: 'post',
     data: {
       id: id
@@ -21,7 +21,7 @@ export function recallSecretary(id) {
 // 修改秘书的信息
 export function updateSecretary(teacher_number, telephone, email) {
   return request({
-    url: '/secretary/update',
+    url: '/sadmin/secretary/update',
     method: 'post',
     data: {
       number: teacher_number,
@@ -34,7 +34,7 @@ export function updateSecretary(teacher_number, telephone, email) {
 // 检索信息
 export function searchSecretary(search_type, search_value) {
   return request({
-    url: '/secretary/search',
+    url: '/sadmin/secretary/search',
     method: 'post',
     data: {
       search_type: search_type,
