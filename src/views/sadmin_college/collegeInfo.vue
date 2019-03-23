@@ -91,13 +91,16 @@
     </el-dialog>
 
   </div>
+
+
 </template>
 
 <script>
-    import { getAllCollegeInfo, collegeUpdate, collegeDelete, collegeAdd } from '../../api/sadmin/college';
+    import { getAllCollegeInfo, collegeUpdate, collegeDelete, collegeAdd } from '@/api/sadmin/college';
     export default {
       inject: ['reload'],
       name: "collegeInfo",
+      //数据展示
       data() {
         return {
           tableData: [],
@@ -114,6 +117,7 @@
           }
         }
       },
+      //方法
       methods: {
         getCollegeInfo: function () {
           getAllCollegeInfo().then(res => {

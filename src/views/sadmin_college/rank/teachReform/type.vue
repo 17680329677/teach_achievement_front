@@ -11,52 +11,40 @@
           <span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="大创等级" width="300">
+      <el-table-column label="类型名称" width="300">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>id: {{ scope.row.id }}</p>
-            <p>父类型id: {{ scope.row.rank_name }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.rank_name }}</el-tag>
+              <el-tag size="medium">{{ scope.row.type_name }}</el-tag>
             </div>
           </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否为学生参与的项目" width="200">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.student_attend }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="deleteProjctChildTypeTitle(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="deleteReformProjectRank(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="学期名称" :label-width="formLabelWidth" prop="name">
-          <el-input v-model="editForm.child_type_name" auto-complete="off"></el-input>
+        <el-form-item label="项目等级名称" :label-width="formLabelWidth" prop="type_name">
+          <el-input v-model="editForm.type_name" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
-
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="学期状态"  :label-width="formLabelWidth">
-          <el-select v-model="editForm.parent_type_id" placeholder="请选择" class="filter-item">
-            <el-option
-              v-for="item in projectTypeOptions"
-              :key="item.id"
-              :label="item.type_name"
-              :value="item.id">
-            </el-option>
-          </el-select>
+        <el-form-item label="是否为学生参与的项目" :label-width="formLabelWidth" prop="student_attend">
+          <el-input v-model="editForm.student_attend" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
-
-      <el-form :model="editForm" ref="editForm">
-        <el-form-item label="学期状态:" :label-width="formLabelWidth" prop="type_id">
-          {{editForm.parent_type_id}}
-        </el-form-item>
-      </el-form>
-
-
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="syncClick">确 定</el-button>
@@ -67,49 +55,30 @@
 </template>
 
 <script>
-  import {projectChildTypeGet, projectChildTypeAdd, projectChildTypeDelete, projectChildTypeUpdate} from "@/api/sadmin/rank/projectChildType";
-  import {projectTypeGet} from "@/api/sadmin/rank/projectType";
+  import {projectTypeGet, projectTypeAdd, projectTypeDelete, projectTypeUpdate} from "@/api/sadmin/rank/projectType";
   import {isEmpty} from '@/utils/validate';
 
   export default {
     inject: ['reload'],
-    name: "innovation",
+    name: "type",
     data() {
       return {
-        tableData: [
-          {
-            "id":1,
-            "rank_name":"国家级"
-          },
-          {
-            "id":2,
-            "rank_name":"省级"
-          },
-          {
-            "id":2,
-            "rank_name":"市级"
-          }
-        ], //用来存放教师职称信息  [显示]
-        projectTypeOptions: [],  //用来存放教师用户类型的选项  [显示]
+        tableData: [],
         dialogFormVisible: false,
         formLabelWidth: '120px',
         dialogTitle: '',
         editForm: {
           id: '',
-          child_type_name: '',     //教改项目 子 类型名称
-          parent_type_id: '',  //教改项目 父 类型id
-          type_name: '' //教改项目 父 类型名称
+          type_name: '',
+          student_attend: ''
         },
       }
     },
     methods: {
-      getProjectChildTypeInfo: function () {
-        projectChildTypeGet().then(res => {
+      getReformProjectTypeInfo: function () {
+        projectTypeGet().then(res => {
           this.tableData = res.data;
-        }),
-          projectTypeGet().then(res => {
-            this.projectTypeOptions = res.data;
-          })
+        })
       },
 
       handleEdit: function (index, row) {
@@ -124,7 +93,7 @@
       },
 
       update: function () {
-        projectChildTypeUpdate(this.editForm.id, this.editForm.child_type_name,this.editForm.parent_type_id).then(res => {
+        projectTypeUpdate(this.editForm.id, this.editForm.type_name,this.editForm.student_attend).then(res => {
           if (res.status == 'success') {
             this.$message({
               message: '更新成功！',
@@ -137,7 +106,7 @@
       },
 
       add: function () {
-        projectChildTypeAdd(this.editForm.child_type_name,this.editForm.parent_type_id).then(res => {
+        projectTypeAdd(this.editForm.type_name,this.editForm.student_attend).then(res => {
           if (res.status == 'success'){
             this.$message({
               message: '添加成功！',
@@ -149,14 +118,14 @@
         })
       },
 
-      deleteProjctChildTypeTitle: function(index, row) {
+      deleteReformProjectRank: function(index, row) {
         this.editForm = Object.assign({}, row);
-        this.$confirm('此操作将永久删除该类型, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该等级, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          projectChildTypeDelete(this.editForm.id).then(res => {
+          projectTypeDelete(this.editForm.id).then(res => {
             if (res.status == 'success'){
               this.$message({
                 message: '删除成功！',
@@ -183,7 +152,7 @@
 
     },
     mounted: function () {
-      //this.getProjectChildTypeInfo();
+      this.getReformProjectTypeInfo();
     }
   }
 </script>

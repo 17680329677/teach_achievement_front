@@ -1,5 +1,5 @@
 const getters = {
-  sidebar: state => state.app.sidebar,
+  sidebar: state => state.app.sidebar, //方法名随意,主要是来承载变化的sidebar的值
   device: state => state.app.device,
   token: state => state.user.token,
   avatar: state => state.user.avatar,

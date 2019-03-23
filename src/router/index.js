@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue'    //引入Vue
+import Router from 'vue-router'   //引入vue-router
 
 // in development-env not use lazy-loading, because lazy-loading too many pages will cause webpack hot update too slow. so only in production use lazy-loading;
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
@@ -7,7 +7,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 /* Layout */
-import Layout from '../views/layout/Layout'
+import Layout from '../views/layout/Layout'  //引入根目录下views中的Layout.vue组件
 
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -38,19 +38,19 @@ export const constantRouterMap = [
   }
 ]
 
-export const asyncRouterMap = [
+export const asyncRouterMap = [   //配置路由，这里是个数组
   // 校级管理员路由配置------------------------------------------------------------------
-  {
-    path: '/college',
-    component: Layout,
+  {                               //每一个链接都是一个对象
+    path: '/college',             //链接路径
+    component: Layout,            //对应的组件模板
     redirect: '/college/index',
-    name: 'collegeinfo',
+    name: 'collegeinfo',          //路由名称，
     meta: { title: '学院', icon: 'example', roles: ['sadmin'] },
-    children: [
+    children: [                   //子路由,嵌套路由 （此处偷个懒，免得单独再列一点）
       {
         path: 'index',
         name: 'college',
-        component: () => import('@/views/sadmin_college/collegeInfo'),
+        component: () => import('@/views/sadmin_college/collegeInfo'), //对应组件
         meta: { title: '学院管理', icon: 'form' }
       }
     ]
@@ -63,73 +63,68 @@ export const asyncRouterMap = [
     name: 'secretary',
     meta: { title: '教务秘书', icon: 'example', roles: ['sadmin'] },
     children: [
-      {
-        path: 'index',
-        name: 'manage',
-        component: () => import('@/views/sadmin_college/academicSecretary'),
-        meta: { title: '教务秘书管理', icon: 'peoples' }
-      }
-    ]
+        {
+          path: 'index',
+          name: 'manage',
+          component: () => import('@/views/sadmin_college/academicSecretary'),
+          meta: { title: '教务秘书管理', icon: 'peoples' }
+        }
+      ]
   },
 
   {
     path: '/rank',
     component: Layout,
-    redirect: '/secretary/bookclass',
+    redirect: '/rank/titlerank',
     name: 'rank',
     meta: { title: '信息配置', icon: 'nested', roles: ['sadmin'] },
     children: [
       {
-        path: 'innovation',
-        name: 'innovation',
-        component: () => import('@/views/sadmin_college/rank/innovation'),
-        meta: { title: '大创等级配置', icon: 'form' }
-      },
-      {
-        path: 'teachreform',
-        name: 'teachreform',
-        component: () => import('@/views/sadmin_college/rank/teachreform'),
-        meta: { title: '教改项目配置', icon: 'form' }
-      },
-      {
-        path: 'bookclass',
-        name: 'book',
-        component: () => import('@/views/sadmin_college/rank/bookClass'),
-        meta: { title: '教材等级配置', icon: 'form' }
+        path: 'titlerank',
+        name: 'title',
+        component: () => import('@/views/sadmin_college/rank/titleRank'),
+        meta: { title: '教师职称配置', icon: 'peoples' }
       },
       {
         path: 'certificate',
         name: 'certificate',
         component: () => import('@/views/sadmin_college/rank/certificate'),
-        meta: { title: '证书等级配置', icon: 'form' }
+        meta: { title: '证书等级配置', icon: 'paper' }
       },
       {
-        path: 'titlerank',
-        name: 'title',
-        component: () => import('@/views/sadmin_college/rank/titleRank'),
-        meta: { title: '教师职称配置', icon: 'form' }
+        path: 'bookclass',
+        name: 'book',
+        component: () => import('@/views/sadmin_college/rank/bookClass'),
+        meta: { title: '教材等级配置', icon: 'book' }
+      },
+              //教改项目类型配置
+      {
+        path: 'reformType',
+        name: 'type',
+        component: () => import('@/views/sadmin_college/rank/teachReform/type'),
+        meta: { title: '教改项目类型配置', icon: 'project'  }
       },
       {
-        path: 'teacher',
-        name: 'teacher',
-        component: () => import('@/views/sadmin_college/rank/teacher/index'),
-        redirect: '/rank/teacher/title',
-        meta: { title: '教师配置', icon: 'form' },
-        children: [
-          {
-            path: 'title',
-            name: 'Menu1-1',
-            component: () => import('@/views/sadmin_college/rank/teacher/title/index'),
-            meta: { title: '教师职称管理' }
-          },
-          {
-            path: 'type',
-            name: 'Menu1-2',
-            component: () => import('@/views/sadmin_college/rank/teacher/type/index'),
-            meta: { title: '教师类型管理' }
-          },
-        ]
+        path: 'reformChildType',
+        name: 'childType',
+        component: () => import('@/views/sadmin_college/rank/teachReform/childType'),
+        meta: { title: '教改项目子类型配置', icon: 'project' }
       },
+      {
+        path: 'reformRank',
+        name: 'reformRank',
+        component: () => import('@/views/sadmin_college/rank/teachReform/reformRank'),
+        meta: { title: '教改项目等级配置' , icon: 'project'}
+      },
+                //教改项目类型配置  end
+      {
+        path: 'innovation',
+        name: 'innovation',
+        component: () => import('@/views/sadmin_college/rank/innovation'),
+        meta: { title: '大创等级配置', icon: 'innovation' }
+      },
+
+
     ]
   },
 
@@ -144,12 +139,28 @@ export const asyncRouterMap = [
         path: 'index',
         name: 'semestermanage',
         component: () => import('@/views/sadmin_college/semester'),
-        meta: { title: '学期配置', icon: 'list' }
+        meta: { title: '学期配置', icon: 'table' }
       }
     ]
   },
 
-  // 院级教务秘书路由配置----------------------------------------------------------------------
+  {       //wkz新增
+    path: '/password',
+    component: Layout,
+    redirect: '/password/index',
+    name: 'password',
+    meta: { title: '密码管理', icon: 'example', roles: ['sadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'passwordChange',
+        component: () => import('@/views/sadmin_college/passwordChange'),
+        meta: { title: '修改密码', icon: 'password' }
+      }
+    ]
+  },
+
+  // 院级教务秘书路由配置(院级管理员)----------------------------------------------------------------------
   {
     path: '/department',
     component: Layout,

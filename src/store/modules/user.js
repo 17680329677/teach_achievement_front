@@ -1,15 +1,16 @@
+//引入方法
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
-  state: {
+  state: { //要设置的全局访问的state对象 变量：token(TOKEN) name(用户姓名) avatar(头像图标img的地址) roles(用户校色)
     token: getToken(),
     name: '',
     avatar: '',
     roles: []
   },
 
-  mutations: {
+  mutations: { //改变全局变量 设置*4
     SET_TOKEN: (state, token) => {
       state.token = token
     },
@@ -24,7 +25,7 @@ const user = {
     },
   },
 
-  actions: {
+  actions: {//来异步触发mutations里面的方法
     // 登录
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()

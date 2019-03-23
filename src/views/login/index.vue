@@ -27,7 +27,7 @@
           v-model="loginForm.password"
           name="password"
           auto-complete="on"
-          placeholder="password"
+          placeholder="请输入密码"
           @keyup.enter.native="handleLogin" />
         <span class="show-pwd" @click="showPwd">
           <svg-icon icon-class="eye" />
@@ -36,7 +36,7 @@
 
       <el-form-item>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          Sign in
+          登&nbsp;&nbsp;&nbsp;录
         </el-button>
       </el-form-item>
       <div class="tips">
@@ -53,6 +53,7 @@ import { isvalidUsername } from '@/utils/validate'
 export default {
   name: 'Login',
   data() {
+    //验证方法
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
         callback(new Error('请输入正确的用户名'))
@@ -67,9 +68,10 @@ export default {
         callback()
       }
     }
+    //数据处理
     return {
       loginForm: {
-        username: '7180266',
+        username: '7180278',
         password: '123456',
         type: 'teacher'
       },
@@ -83,6 +85,7 @@ export default {
       redirect: undefined
     }
   },
+  //监测Vue实例上的数据变动
   watch: {
     $route: {
       handler: function(route) {
@@ -91,6 +94,7 @@ export default {
       immediate: true
     }
   },
+  // @click 调用方法 点击后触发
   methods: {
     showPwd() {
       if (this.pwdType === 'password') {
@@ -115,6 +119,8 @@ export default {
         }
       })
     }
+
+
   }
 }
 </script>

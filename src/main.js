@@ -10,7 +10,7 @@ import '@/styles/index.scss' // global css
 
 import App from './App'
 import router from './router'
-import store from './store'
+import store from './store'   //引入VueX “store”可全局引用
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -22,7 +22,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  // 把 store 对象提供给 “store” 选项，这可以把 store 的实例注入所有的子组件
+  // 把 store 对象提供给 “store” 选项，这可以把 store 的实例注入所有的子组件（vuex）
   store,
   render: h => h(App)
 })

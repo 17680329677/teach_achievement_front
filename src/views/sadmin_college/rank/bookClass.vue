@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
       <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleAdd">添加</el-button>
       <br/><br/>
     </div>

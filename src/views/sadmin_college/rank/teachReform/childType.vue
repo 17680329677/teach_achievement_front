@@ -11,15 +11,20 @@
           <span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="大创等级" width="300">
+      <el-table-column label="项目子类型" width="300">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>id: {{ scope.row.id }}</p>
-            <p>父类型id: {{ scope.row.rank_name }}</p>
+            <p>父类型id: {{ scope.row.parent_type_id }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.rank_name }}</el-tag>
+              <el-tag size="medium">{{ scope.row.child_type_name }}</el-tag>
             </div>
           </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column label="所属项目父类型" width="200">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.type_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -32,13 +37,13 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="学期名称" :label-width="formLabelWidth" prop="name">
+        <el-form-item label="子类型名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="editForm.child_type_name" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
 
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="学期状态"  :label-width="formLabelWidth">
+        <el-form-item label="所属项目父类型"  :label-width="formLabelWidth">
           <el-select v-model="editForm.parent_type_id" placeholder="请选择" class="filter-item">
             <el-option
               v-for="item in projectTypeOptions"
@@ -51,7 +56,7 @@
       </el-form>
 
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="学期状态:" :label-width="formLabelWidth" prop="type_id">
+        <el-form-item label="项目父类型id:" :label-width="formLabelWidth" prop="type_id">
           {{editForm.parent_type_id}}
         </el-form-item>
       </el-form>
@@ -73,23 +78,10 @@
 
   export default {
     inject: ['reload'],
-    name: "innovation",
+    name: "titlerank",
     data() {
       return {
-        tableData: [
-          {
-            "id":1,
-            "rank_name":"国家级"
-          },
-          {
-            "id":2,
-            "rank_name":"省级"
-          },
-          {
-            "id":2,
-            "rank_name":"市级"
-          }
-        ], //用来存放教师职称信息  [显示]
+        tableData: [], //用来存放教师职称信息  [显示]
         projectTypeOptions: [],  //用来存放教师用户类型的选项  [显示]
         dialogFormVisible: false,
         formLabelWidth: '120px',
@@ -183,7 +175,7 @@
 
     },
     mounted: function () {
-      //this.getProjectChildTypeInfo();
+      this.getProjectChildTypeInfo();
     }
   }
 </script>
