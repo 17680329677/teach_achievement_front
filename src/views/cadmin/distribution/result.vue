@@ -1,16 +1,15 @@
 <template>
     <div>
-      教改项目页面222
+      result
     </div>
 </template>
 
 <script>
     export default {
-        name: "teach_reform"
+        name: "result"
     }
 </script>
 
 <style scoped>
 
 </style>
-

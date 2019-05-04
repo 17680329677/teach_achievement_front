@@ -1,13 +1,14 @@
 //引入方法
 import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken,   getType, setType, removeType } from '@/utils/auth'
 
 const user = {
   state: { //要设置的全局访问的state对象 变量：token(TOKEN) name(用户姓名) avatar(头像图标img的地址) roles(用户校色)
     token: getToken(),
     name: '',
     avatar: '',
-    roles: []
+    roles: [],
+    type: getType()
   },
 
   mutations: { //改变全局变量 设置*4
@@ -23,6 +24,9 @@ const user = {
     SET_ROLES: (state, roles) => {
       state.roles = roles
     },
+    SET_TYPE: (state, type) => {
+      state.type = type
+    },
   },
 
   actions: {//来异步触发mutations里面的方法
@@ -33,8 +37,12 @@ const user = {
       return new Promise((resolve, reject) => {
         login(username, userInfo.password, userInfo.type).then(response => {
           const data = response.data
+
           setToken(data.token)
+          setType(data.type)
+
           commit('SET_TOKEN', data.token)
+          commit('SET_TYPE', data.type)
           resolve()
         }).catch(error => {
           reject(error)
@@ -45,12 +53,12 @@ const user = {
     // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo(state.token).then(response => {
+        getInfo(state.token, state.type ).then(response => {
           const data = response.data
           if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roles)
           } else {
-            reject('getInfo: roles must be a non-null array !')
+            reject(  'getInfo: 权限数组不能为空！（roles must be a non-null array !）'  )
           }
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
@@ -67,7 +75,9 @@ const user = {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
+          commit('SET_TYPE', '')
           removeToken()
+          removeType()
           resolve()
         }).catch(error => {
           reject(error)
@@ -79,7 +89,9 @@ const user = {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
+        commit('SET_TYPE', '')
         removeToken()
+        removeType()
         resolve()
       })
     }

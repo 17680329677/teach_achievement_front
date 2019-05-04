@@ -119,6 +119,7 @@
       },
       //方法
       methods: {
+        //获取所有学院数据
         getCollegeInfo: function () {
           getAllCollegeInfo().then(res => {
             this.tableData = res.data;

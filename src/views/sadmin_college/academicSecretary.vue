@@ -13,7 +13,9 @@
       </el-select>
       <el-input placeholder="请输入内容" prefix-icon="el-icon-search" style="width: 200px; margin-left: 20px" class="filter-item" v-model="search_value"></el-input>
       <el-button type="primary" style="margin-left: 10px; text-align: center;" icon="el-icon-search" @click="search">搜索</el-button>
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加</el-button>
+
+
+      <el-button class="filter-item"  style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加</el-button>
       <br/><br/>
     </div>
 

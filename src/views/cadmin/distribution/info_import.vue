@@ -1,16 +1,15 @@
 <template>
     <div>
-      教改项目页面222
+      info_import
     </div>
 </template>
 
 <script>
     export default {
-        name: "teach_reform"
+        name: "info_import"
     }
 </script>
 
 <style scoped>
 
 </style>
-

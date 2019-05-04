@@ -30,7 +30,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="deleteProjctChildTypeTitle(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="deleteSemesterInfo(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -38,18 +38,18 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" ref="editForm">
         <el-form-item label="学期名称" :label-width="formLabelWidth" prop="name">
-          <el-input v-model="editForm.child_type_name" auto-complete="off"></el-input>
+          <el-input v-model="editForm.semester_name" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
 
       <el-form :model="editForm" ref="editForm">
         <el-form-item label="学期状态"  :label-width="formLabelWidth">
-          <el-select v-model="editForm.parent_type_id" placeholder="请选择" class="filter-item">
+          <el-select v-model="editForm.status" placeholder="请选择" class="filter-item">
             <el-option
-              v-for="item in projectTypeOptions"
+              v-for="item in statusOptions"
               :key="item.id"
-              :label="item.type_name"
-              :value="item.id">
+              :label="item.status_name"
+              :value="item.status_name">
             </el-option>
           </el-select>
         </el-form-item>
@@ -57,7 +57,7 @@
 
       <el-form :model="editForm" ref="editForm">
         <el-form-item label="学期状态:" :label-width="formLabelWidth" prop="type_id">
-          {{editForm.parent_type_id}}
+          {{editForm.status}}
         </el-form-item>
       </el-form>
 
@@ -72,8 +72,7 @@
 </template>
 
 <script>
-  import {projectChildTypeGet, projectChildTypeAdd, projectChildTypeDelete, projectChildTypeUpdate} from "@/api/sadmin/rank/projectChildType";
-  import {projectTypeGet} from "@/api/sadmin/rank/projectType";
+  import {semesterInfoGet, semesterInfoAdd, semesterInfoDelete, semesterInfoUpdate} from "@/api/sadmin/rank/semesterInfo";
   import {isEmpty} from '@/utils/validate';
 
   export default {
@@ -81,38 +80,32 @@
     name: "semester",
     data() {
       return {
-        tableData: [
+        tableData: [], //用来存放信息  [显示]
+        statusOptions: [
           {
             "id":1,
-            "semester_name":"2019-2020年第一学期",
-            "status":"正在进行(已生效)"
+            "status_name":"正在进行(已生效)"
           },
           {
             "id":2,
-            "semester_name":"2019-2020年第二学期",
-            "status":"(未生效)"
+            "status_name":"(未生效)"
           }
-        ], //用来存放教师职称信息  [显示]
-        projectTypeOptions: [],  //用来存放教师用户类型的选项  [显示]
+        ],  //用来存状态类型的选项  [显示]
         dialogFormVisible: false,
         formLabelWidth: '120px',
         dialogTitle: '',
         editForm: {
           id: '',
-          child_type_name: '',     //教改项目 子 类型名称
-          parent_type_id: '',  //教改项目 父 类型id
-          type_name: '' //教改项目 父 类型名称
+          semester_name: '',     //学期名称
+          status: '',  //状态
         },
       }
     },
     methods: {
-      getProjectChildTypeInfo: function () {
-        projectChildTypeGet().then(res => {
+      getSemesterInfo: function () {
+        semesterInfoGet().then(res => {
           this.tableData = res.data;
-        }),
-          projectTypeGet().then(res => {
-            this.projectTypeOptions = res.data;
-          })
+        })
       },
 
       handleEdit: function (index, row) {
@@ -127,7 +120,7 @@
       },
 
       update: function () {
-        projectChildTypeUpdate(this.editForm.id, this.editForm.child_type_name,this.editForm.parent_type_id).then(res => {
+        semesterInfoUpdate(this.editForm.id, this.editForm.semester_name,this.editForm.status).then(res => {
           if (res.status == 'success') {
             this.$message({
               message: '更新成功！',
@@ -140,7 +133,7 @@
       },
 
       add: function () {
-        projectChildTypeAdd(this.editForm.child_type_name,this.editForm.parent_type_id).then(res => {
+        semesterInfoAdd(this.editForm.semester_name,this.editForm.status).then(res => {
           if (res.status == 'success'){
             this.$message({
               message: '添加成功！',
@@ -152,14 +145,14 @@
         })
       },
 
-      deleteProjctChildTypeTitle: function(index, row) {
+      deleteSemesterInfo: function(index, row) {
         this.editForm = Object.assign({}, row);
         this.$confirm('此操作将永久删除该类型, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          projectChildTypeDelete(this.editForm.id).then(res => {
+          semesterInfoDelete(this.editForm.id).then(res => {
             if (res.status == 'success'){
               this.$message({
                 message: '删除成功！',
@@ -186,7 +179,7 @@
 
     },
     mounted: function () {
-      //this.getProjectChildTypeInfo();
+      this.getSemesterInfo();
     }
   }
 </script>

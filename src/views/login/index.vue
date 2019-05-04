@@ -40,7 +40,7 @@
         </el-button>
       </el-form-item>
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
+        <span style="margin-right:20px;">username: 教师（7180278、7180288、7180266）、学生（15008023）</span>
         <span> password: admin</span>
       </div>
     </el-form>
@@ -53,6 +53,7 @@ import { isvalidUsername } from '@/utils/validate'
 export default {
   name: 'Login',
   data() {
+
     //验证方法
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
@@ -68,10 +69,11 @@ export default {
         callback()
       }
     }
+
     //数据处理
     return {
       loginForm: {
-        username: '7180278',
+        username: '7180288',
         password: '123456',
         type: 'teacher'
       },
@@ -120,7 +122,11 @@ export default {
       })
     }
 
+  },
 
+  mounted: function () {
+    //debug
+    window.vue = this
   }
 }
 </script>

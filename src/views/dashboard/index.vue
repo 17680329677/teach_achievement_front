@@ -1,7 +1,8 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name:{{ name }}</div>
-    <div class="dashboard-text">roles:<span v-for="role in roles" :key="role">{{ role }}</span></div>
+    <div class="dashboard-text">姓名:{{ name }}</div>
+    <div class="dashboard-text">角色权限:<span v-for="role in roles" :key="role">{{ role }}</span></div>
+    <div class="dashboard-text">用户类型:{{ type }}</div>
     <div class="dashboard-text">登录后的默认页面</div>
   </div>
 </template>
@@ -14,7 +15,8 @@ export default {
   computed: {
     ...mapGetters([
       'name',
-      'roles'
+      'roles',
+      'type'
     ])
   }
 }
