@@ -54,31 +54,29 @@ export function changeStatus(id, status) {
 }
 
 //修改信息
-export function changeReformSubmitInfo(id, book_name, book_number, publish_time, pages, words, isbn, press,
-                                 version, style, rank_id, college, project, status, cover_path,
-                                 copy_path, content_path, authors) {
+export function changeReformSubmitInfo(id, project_name, project_number, type_child_id, rank_id,
+                                       begin_year_month, mid_check_year_month, end_year_month,
+                                       mid_check_rank, end_check_rank,
+                                       subject, host_student, participate_student, remark, grade ) {
   return request({
-    url: '/cadmin/book/submitInfo/change',
+    url: '/cadmin/teach_reform/submitInfo/change',
     method: 'post',
     data: {
       id: id,
-      book_name: book_name,
-      book_number: book_number,
-      publish_time: publish_time,
-      pages: pages,
-      words: words,
-      isbn: isbn,
-      press: press,
-      version: version,
-      style: style,
+      project_name: project_name,
+      project_number: project_number,
+      type_child_id: type_child_id,
       rank_id: rank_id,
-      college: college,
-      project: project,
-      status: status,
-      cover_path: cover_path,
-      copy_path: copy_path,
-      content_path: content_path,
-      authors: authors,
+      begin_year_month: begin_year_month,
+      mid_check_year_month: mid_check_year_month,
+      end_year_month: end_year_month,
+      mid_check_rank: mid_check_rank,
+      end_check_rank: end_check_rank,
+      subject: subject,
+      host_student: host_student,
+      participate_student: participate_student,
+      remark: remark,
+      grade: grade
     }
   })
 }

@@ -69,6 +69,20 @@ export function changeSubmitInfo(id, book_name, book_number, publish_time, pages
   })
 }
 
+
+//按照状态检索
+export function statusSearchBook(status) {
+  return request({
+    url: '/cadmin/book/status_search',
+    method: 'post',
+    data: {
+      token: store.getters.token,
+      status: status
+    }
+  })
+}
+
+//检索
 export function searchBookInfo(search_type, search_value) {
   return request({
     url: '/cadmin/book/search',

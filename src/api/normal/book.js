@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 import store from '../../store'
 
+//基本信息
 export function getAllBookInfo() {
   return request({
     url: '/normal/book/index',
@@ -11,6 +12,7 @@ export function getAllBookInfo() {
   })
 }
 
+//详细信息
 export function getDetailBookInfo(id) {
   return request({
     url: '/normal/book/detail',
@@ -21,26 +23,48 @@ export function getDetailBookInfo(id) {
   })
 }
 
-export function changeToSubmit(id) {
+//改变状态
+export function changeBookStatus(id,status) {
   return request({
-    url: '/normal/book/changestatus/submit',
+    url: '/cadmin/book/changestatus',
     method: 'post',
     data: {
-      id: id
+      id: id,
+      status: status
     }
   })
 }
 
-export function recallSubmit(id) {
+//修改信息
+export function changeSubmitInfo(id, book_name, book_number, publish_time, pages, words, isbn, press,
+                                 version, style, rank_id, college, project, status, cover_path,
+                                 copy_path, content_path, authors) {
   return request({
-    url: '/normal/book/changestatus/recallsubmit',
+    url: '/normal/book/submitInfo/change',
     method: 'post',
     data: {
-      id: id
+      id: id,
+      book_name: book_name,
+      book_number: book_number,
+      publish_time: publish_time,
+      pages: pages,
+      words: words,
+      isbn: isbn,
+      press: press,
+      version: version,
+      style: style,
+      rank_id: rank_id,
+      college: college,
+      project: project,
+      cover_path: cover_path,
+      copy_path: copy_path,
+      content_path: content_path,
+      authors: authors,
     }
   })
 }
 
+//删除书籍
 export function deleteBookInfo(id) {
   return request({
     url: '/normal/book/delete',

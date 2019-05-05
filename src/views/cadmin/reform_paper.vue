@@ -64,7 +64,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="提交时间" width="200">
+      <el-table-column label="论文发表时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ format(scope.row.publish_year_month) }}</span>
@@ -137,14 +137,43 @@
         <el-form-item label="来源项目" >
           <el-input v-model="editForm.source_project" auto-complete="off"></el-input>
         </el-form-item>
+
         <el-form-item label="封面图片" >
-          <a :href="editForm.cover_path" target="_blank"><img :src="editForm.cover_path" width="200px" height="200px"/></a>
+          图片名称：{{editForm.cover_path}}
+          <el-upload
+            class = "upload-demo"
+            :action = "fileUploadUrl"
+            :on-preview = "handlePreview"
+            :on-success = "coverHandleSuccess"
+            :on-remove = "coverHandleRemove"
+            :multiple = "false"
+            :limit = "1"
+            :file-list="cover_path_img"
+            list-type="picture">
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png/jpeg/gif文件，上传或删除图片后点击提交按钮才能更新</div>
+          </el-upload>
         </el-form-item>
+
         <el-form-item label="内容图片" >
-          <a :href="editForm.content_path" target="_blank"><img :src="editForm.content_path" width="200px" height="200px"/></a>
+          图片名称：{{editForm.content_path}}
+          <el-upload
+            class = "upload-demo"
+            :action = "fileUploadUrl"
+            :on-preview = "handlePreview"
+            :on-success = "contentHandleSuccess"
+            :on-remove = "contentHandleRemove"
+            :multiple = "false"
+            :limit = "1"
+            :file-list="content_path_img"
+            list-type="picture">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png/jpeg/gif文件，上传或删除图片后点击提交按钮才能更新</div>
+          </el-upload>
         </el-form-item>
+
         <el-form-item label="论文路径" >
-          <a :href="editForm.text_path" target="_blank"><img :src="editForm.content_path" width="200px" height="200px"/></a>
+          <el-input v-model="editForm.text_path" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="中国知网链接" >
           <el-input v-model="editForm.cnki_url" auto-complete="off"></el-input>
@@ -156,6 +185,17 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="changeSubmitInfo">提 交 修 改</el-button>
         <el-button @click="dialogFormVisible = false">返 回</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 图片预览弹出框 -->
+    <el-dialog title="预览" :visible.sync="imgFormVisible">
+      <img
+        :src="imgFormUrl"
+        style="width: 100%"
+      ></img>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="imgFormVisible = false,imgFormUrl = '' ">返 回</el-button>
       </div>
     </el-dialog>
 
@@ -202,6 +242,9 @@
         dialogTitle: '编辑',
         formLabelWidth: '120px',
 
+        imgFormVisible: false,
+        imgFormUrl: '',
+
         //编辑框
         editForm: {
           id: '',
@@ -223,6 +266,17 @@
         },
 
 
+        //文件上传
+        fileUploadUrl: process.env.FILE_UPLOAD_URL,
+        fileVisitUrl: process.env.FILE_VISIT_URL,
+
+        imgObj : '', //
+        cover_path_img: [
+          //{name: '1.png', url: this.fileVisitUrl +'1.png' }
+        ],
+        content_path_img: [],
+
+
       }
     },
     watch: {
@@ -238,19 +292,108 @@
     },
 
     methods: {
+
+      //翻页
       handleCurrentChange(cpage){
         this.currentPage = cpage;
       },
-
+      //时间格式化
       format: function (time) {
         return dateFormat(time)
       },
+
+      //文件操作功能
+      //文件预览
+      handlePreview(file) {
+        this.imgFormUrl = this.fileVisitUrl + file.name;
+        console.log("PreviewFile:" + this.imgFormUrl);
+        this.imgFormVisible = true;
+      },
+
+      //文件删除
+      handleRemove(file, fileList) {
+        console.log("deleteFile:" + file.name);
+        var type = ''
+        deleteFile(file.name).then(res=>{
+          type = res.status;
+          if (res.status == 'success'){
+            this.$message({
+              message: res.reason,
+              type: 'success'
+            });
+          } else {
+            this.$message({
+              message: res.reason,
+              type: 'warning'
+            });
+          }
+        })
+        return type
+      },
+      coverHandleRemove(file, fileList){
+        let res = this.handleRemove(file, fileList);
+        file.name = '';
+        file.url = '';
+        this.editForm.cover_path = '';//上传
+      },
+      contentHandleRemove(file, fileList){
+        let res = this.handleRemove(file, fileList);
+        file.name = '';
+        file.url = '';
+        this.editForm.content_path = '';//上传
+      },
+
+
+      //当文件上传成功后
+      handleSuccess(response, file, fileList){
+        var type = ''
+        if (response.status == 'success'){
+          type = response.status;
+          this.$message({
+            message: response.reason,
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: response.reason,
+            type: 'warning'
+          });
+        }
+        return type;
+      },
+      coverHandleSuccess(response, file, fileList){
+        var res = this.handleSuccess(response, file, fileList);
+        if (res == 'success'){
+          file.name = response.data;
+          file.url = this.fileVisitUrl + response.data;
+          this.editForm.cover_path = response.data;//上传
+        }
+      },
+      contentHandleSuccess(response, file, fileList){
+        var res = this.handleSuccess(response, file, fileList);
+        if (res == 'success'){
+          file.name = response.data;
+          file.url = this.fileVisitUrl + response.data;
+          this.editForm.content_path = response.data;//上传
+        }
+      },
+
+
+
 
       //获得项目详细信息
       getDetail: function (index, row) {
         let id = Object.assign({}, row).id;
         getDetailReformPaperInfo(id).then(res => {
           this.editForm = res.data[0];
+
+          //挂载图片显示
+          if(this.editForm.cover_path){
+            this.cover_path_img = [ {name: this.editForm.cover_path, url: this.fileVisitUrl + this.editForm.cover_path } ]
+          }
+          if(this.editForm.content_path){
+            this.content_path_img = [ {name: this.editForm.content_path, url: this.fileVisitUrl + this.editForm.content_path } ]
+          }
 
           this.dialogTitle = '编辑';
           this.dialogFormVisible = true;

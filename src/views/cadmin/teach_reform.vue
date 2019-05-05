@@ -3,7 +3,7 @@
 
     <div class="filter-container">
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
-      <span class="filter-item" style="font-family: PingFang SC; font-size: 20px;">工号、名称检索：</span>
+      <span class="filter-item" style="font-family: PingFang SC; font-size: 20px;">教师姓名、项目名称检索：</span>
       <el-select v-model="searchType" placeholder="按工号或项目名称搜索" class="filter-item" style="margin-left: 20px">
         <el-option
           v-for="item in options"
@@ -17,19 +17,19 @@
     </div>
 
     <div class="filter-container">
-      <span class="filter-item" style="font-family: PingFang SC; font-size: 20px;">状态检索：</span>
-      <el-select v-model="searchStatus" placeholder="按状态搜索" class="filter-item" style="margin-left: 20px">
-        <el-option
-          v-for="item in statusOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
+    <span class="filter-item" style="font-family: PingFang SC; font-size: 20px;">状态检索：</span>
+    <el-select v-model="searchStatus" placeholder="按状态搜索" class="filter-item" style="margin-left: 20px">
+      <el-option
+        v-for="item in statusOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
 
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加教材</el-button>
-      <br/><br/>
-    </div>
+    <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加教材</el-button>
+    <br/><br/>
+  </div>
 
     <el-table :data="tableData.slice((currentPage-1)*pageSize, currentPage*pageSize)" style="width: 100%" border>
 
@@ -66,7 +66,10 @@
       <el-table-column label="状态" width="85">
         <template slot-scope="scope">
           <span style="margin-left: 10px" v-if="(scope.row.status == '2')">待审核</span>
-          <span style="margin-left: 10px" v-if="(scope.row.status == '3')">已存档</span>
+          <span style="margin-left: 10px" v-if="(scope.row.status == '3')">立项</span>
+          <span style="margin-left: 10px" v-if="(scope.row.status == '4')">中期检查通过</span>
+          <span style="margin-left: 10px" v-if="(scope.row.status == '5')">结题</span>
+          <span style="margin-left: 10px" v-if="(scope.row.status == '6')">已存档</span>
         </template>
       </el-table-column>
 
@@ -80,8 +83,19 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="getDetail(scope.$index, scope.row)">修改信息</el-button>
-          <el-button size="mini" type="danger" @click="recallAudit(scope.$index, scope.row)" :disabled="(scope.row.status == '3')">审核退回</el-button>
-          <el-button size="mini" type="primary" @click="passAudit(scope.$index, scope.row)" :disabled="(scope.row.status == '3')">审核通过</el-button>
+          <el-dropdown @command="">
+            <el-button type="primary" size="mini" style="width: 90px;margin-left: 5px;">
+              状态变更<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :disabled="scope.row.status == '1'" @click.native="handleChangeStatus(scope.row.id, '1')">审核退回</el-dropdown-item>
+              <el-dropdown-item :disabled="scope.row.status == '3'" @click.native="handleChangeStatus(scope.row.id, '3')">立项</el-dropdown-item>
+              <el-dropdown-item :disabled="scope.row.status == '4'" @click.native="handleChangeStatus(scope.row.id, '4')">中期检查通过</el-dropdown-item>
+              <el-dropdown-item :disabled="scope.row.status == '5'" @click.native="handleChangeStatus(scope.row.id, '5')">结题</el-dropdown-item>
+              <el-dropdown-item :disabled="scope.row.status == '6'" @click.native="handleChangeStatus(scope.row.id, '6')">存档</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
         </template>
       </el-table-column>
     </el-table>
@@ -100,83 +114,89 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" size="small" label-width="80px">
-        <el-form-item label="教材名称">
-          <el-input v-model="editForm.book_name" auto-complete="off"></el-input>
+        <el-form-item label="项目名称">
+          <el-input v-model="editForm.project_name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="教材编号" >
-          <el-input v-model="editForm.book_number" auto-complete="off"></el-input>
+        <el-form-item label="教师姓名" >
+          <el-input v-model="editForm.teacher_name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="出版年月" >
-          <el-input v-model="editForm.publish_time" auto-complete="off"></el-input>
+        <el-form-item label="参与类型" >
+          <el-input v-model="editForm.participate_type" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="教材页数" >
-          <el-input v-model="editForm.pages" auto-complete="off"></el-input>
+        <el-form-item label="项目编号" >
+          <el-input v-model="editForm.project_number" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="字数(千字)" >
-          <el-input v-model="editForm.words" auto-complete="off"></el-input>
+        <el-form-item label="项目子类型id" >
+          <el-input v-model="editForm.type_child_id" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="ISBN" >
-          <el-input v-model="editForm.isbn" auto-complete="off"></el-input>
+        <el-form-item label="项目子类型" >
+          <el-input v-model="editForm.child_type_name" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="出版社" >
-          <el-input v-model="editForm.press" auto-complete="off"></el-input>
+        <el-form-item label="项目所属级别id" >
+          <el-input v-model="editForm.rank_id" auto-complete="off" ></el-input>
         </el-form-item>
-        <el-form-item label="教材版本" >
-          <el-input v-model="editForm.version" auto-complete="off"></el-input>
+        <el-form-item label="项目所属级别" >
+          <el-input v-model="editForm.rank_name" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="出版形式" >
-          <el-input v-model="editForm.style" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="教材级别" >
-          <el-select v-model="editForm.rank_id" placeholder="请选择" class="filter-item">
-            <el-option
-              v-for="item in bookRankOptins"
-              :label="item.rank_name + ' ( ' + item.id + ' ) ' "
-              :key="item.id"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="所属学院" >
-          <el-input v-model="editForm.college" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="来源项目" >
-          <el-input v-model="editForm.project" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" >
-          <el-input v-model="editForm.status" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="封面图片" >
-          <a :href="editForm.cover_path" target="_blank"><img :src="editForm.cover_path" width="200px" height="200px"/></a>
-        </el-form-item>
-        <el-form-item label="版权页图片" >
-          <a :href="editForm.copy_path" target="_blank"><img :src="editForm.copy_path" width="200px" height="200px"/></a>
-        </el-form-item>
-        <el-form-item label="内容图片" >
-          <a :href="editForm.content_path" target="_blank"><img :src="editForm.content_path" width="200px" height="200px"/></a>
-        </el-form-item>
-        <el-form-item label="参编教师" >
-          <el-input v-model="editForm.authors" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="提交教师" >
-          <el-input v-model="editForm.teacher_name" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="提交时间" >
-          <el-input auto-complete="off" :value="format(editForm.submit_time)" :disabled="true"></el-input>
-        </el-form-item>
-
-        <el-form-item label="授予时间" >
+        <el-form-item label="项目立项时间" >
           <div class="block">
             <el-date-picker
               value-format="timestamp"
-              v-model="editForm.submit_time"
+              v-model="editForm.begin_year_month"
               type="date"
               placeholder="选择日期">
             </el-date-picker>
           </div>
         </el-form-item>
+        <el-form-item label="中期检查时间" >
+          <div class="block">
+            <el-date-picker
+              value-format="timestamp"
+              v-model="editForm.mid_check_year_month"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </div>
+        </el-form-item>
+        <el-form-item label="项目结项时间" >
+          <div class="block">
+            <el-date-picker
+              value-format="timestamp"
+              v-model="editForm.end_year_month"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </div>
+        </el-form-item>
+        <el-form-item label="中期检查等级" >
+          <el-input v-model="editForm.mid_check_rank" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="结项等级" >
+          <el-input v-model="editForm.end_check_rank" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="所属一级学科" >
+          <el-input v-model="editForm.subject" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" >
+          <el-input v-model="editForm.status" auto-complete="off" :disabled="true" ></el-input>
+        </el-form-item>
+        <el-form-item label="项目主持学生" >
+          <el-input v-model="editForm.host_student" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="参与学生" >
+          <el-input v-model="editForm.participate_student" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="备注信息" >
+          <el-input v-model="editForm.remark" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="项目最终成绩" >
+          <el-input v-model="editForm.grade" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="提交时间" >
+          <el-input auto-complete="off" :value="format(editForm.submit_time)" :disabled="true"></el-input>
+        </el-form-item>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="changeSubmitInfo">提 交 修 改</el-button>
         <el-button @click="dialogFormVisible = false">返 回</el-button>
@@ -289,7 +309,7 @@
       getDetail: function (index, row) {
         let id = Object.assign({}, row).id;
         getDetailReformInfo(id).then(res => {
-          this.editForm = res.data;
+          this.editForm = res.data[0];
 
           this.dialogTitle = '编辑';
           this.dialogFormVisible = true;
@@ -298,11 +318,23 @@
 
       //提交修改
       changeSubmitInfo: function(){
-        changeSubmitInfo(this.editForm.id, this.editForm.book_name, this.editForm.book_number, this.editForm.publish_time,
-          this.editForm.pages, this.editForm.words, this.editForm.isbn, this.editForm.press, this.editForm.version,
-          this.editForm.style, this.editForm.rank_id, this.editForm.college, this.editForm.project,
-          this.editForm.status, this.editForm.cover_path, this.editForm.copy_path, this.editForm.content_path,
-          this.editForm.authors, ).then(res=>{
+        changeReformSubmitInfo(
+                this.editForm.id,
+                this.editForm.project_name,
+                this.editForm.project_number,
+                this.editForm.type_child_id,
+                this.editForm.rank_id,
+                this.editForm.begin_year_month,
+                this.editForm.mid_check_year_month,
+                this.editForm.end_year_month,
+                this.editForm.mid_check_rank,
+                this.editForm.end_check_rank,
+                this.editForm.subject,
+                this.editForm.host_student,
+                this.editForm.participate_student,
+                this.editForm.remark,
+                this.editForm.grade
+        ).then(res=>{
           if (res.status == 'success') {
             this.$message({
               message: '修改成功',
@@ -314,9 +346,9 @@
       },
 
 
-      //撤回提交
-      recallAudit: function (index, row) {
-        recallSubmit(Object.assign({}, row).id).then(res => {
+      //改变状态
+      handleChangeStatus: function (id, status) {
+        changeStatus(id, status).then(res => {
           if (res.status == 'success') {
             this.reload();
             this.$message({
