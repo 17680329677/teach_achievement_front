@@ -321,6 +321,22 @@ export const asyncRouterMap = [   //配置路由，这里是个数组
 
   // 普通教师路由配置---------------------------------------------------------------------
   {
+    path: '/book',
+    component: Layout,
+    redirect: '/book/list',
+    name: 'book',
+    meta: { title: '教材管理', icon: 'book', roles: ['normal'] },
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        component: () => import('@/views/normal/book/list'),
+        meta: { title: '教材信息', icon: 'booklist' }
+      },
+    ]
+  },
+
+  {
     path: '/teach_reform',
     component: Layout,
     redirect: '/teach_reform/index',
@@ -336,40 +352,55 @@ export const asyncRouterMap = [   //配置路由，这里是个数组
     ]
   },
 
+          //teacher 新增
+
   {
-    path: '/book',
+    path: '/reform_paper',
     component: Layout,
-    redirect: '/book/list',
-    name: 'book',
-    meta: { title: '教材管理', icon: 'book', roles: ['normal'] },
+    redirect: '/reform_paper/index',
+    name: 'reform_papers',
+    meta: { title: '教改论文', icon: 'paper', roles: ['normal'] },
     children: [
       {
-        path: 'list',
-        name: 'list',
-        component: () => import('@/views/normal/book/list'),
-        meta: { title: '教材信息', icon: 'booklist' }
-      },
-      {
-        path: 'create',
-        name: 'create',
-        component: () => import('@/views/normal/book/create'),
-        meta: { title: '增加教材', icon: 'add' }
+        path: 'index',
+        name: 'reform_paper',
+        component: () => import('@/views/normal/reform_paper'),
+        meta: { title: '教改论文', icon: 'paper' }
       }
     ]
   },
+
+  {
+    path: '/innovation',
+    component: Layout,
+    redirect: '/innovation/index',
+    name: 'innovations',
+    meta: { title: '大创项目', icon: 'innovation', roles: ['normal'] },
+    children: [
+      {
+        path: 'index',
+        name: 'innovation',
+        component: () => import('@/views/normal/innovation'),
+        meta: { title: '大创项目', icon: 'innovation' }
+      }
+    ]
+  },
+
+
+          //teacher 新增 end
 
   { //监考信息
     path: '/invigilate',
     component: Layout,
     redirect: '/invigilate/index',
     name: 'invigilate',
-    meta: { title: '教考信息', icon: 'book', roles: ['normal'] },
+    meta: { title: '监考信息', icon: 'book', roles: ['normal'] },
     children: [
       {
         path: 'index',
         name: 'index',
         component: () => import('@/views/normal/invigilate'),
-        meta: { title: '教考信息', icon: 'booklist' }
+        meta: { title: '监考信息', icon: 'booklist' }
       },
     ]
   },

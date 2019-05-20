@@ -3,18 +3,20 @@
 
     <div class="filter-container">
       <span class="filter-item" style="font-family: PingFang SC; font-size: 20px;">按时间段检索</span>
-      <el-date-picker
-        style="margin-left: 100px"
-        value-format="timestamp"
-        v-model="serchTimeRange"
-        type="daterange"
-        align="right"
-        unlink-panels
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="pickerOptions">
-      </el-date-picker>
+      <div class="block">
+        <el-date-picker
+          style="margin-left: 100px"
+          value-format="timestamp"
+          v-model="serchTimeRange"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions">
+        </el-date-picker>
+      </div>
       <br><br>
     </div>
 
@@ -54,7 +56,7 @@
 
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="getDetail(scope.row.number)">详细监考信息</el-button>
+          <el-button type="primary" size="mini" @click="getDetail(scope.row.number)">监考信息详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -137,7 +139,7 @@
         dialogFormVisible: false,
 
         //弹出框
-        dialogTitle: '详细监考信息',
+        dialogTitle: '监考信息详情',
         formLabelWidth: '120px',
 
         //弹出显示框

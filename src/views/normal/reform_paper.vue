@@ -3,8 +3,8 @@
 
     <div class="filter-container">
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
-      <span class="filter-item" style="font-family: PingFang SC; font-size: 25px;">教师姓名、书籍名称检索：</span>
-      <el-select v-model="search_type" placeholder="请选择" class="filter-item" style="margin-left: 20px">
+      <span class="filter-item" style="font-family: PingFang SC; font-size: 20px;">工号、名称检索：</span>
+      <el-select v-model="searchType" placeholder="按项目名称搜索" class="filter-item" style="margin-left: 20px">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -12,9 +12,8 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-input placeholder="请输入内容" prefix-icon="el-icon-search" style="width: 200px; margin-left: 20px" class="filter-item" v-model="search_value"></el-input>
+      <el-input placeholder="请输入内容" prefix-icon="el-icon-search" style="width: 200px; margin-left: 20px" class="filter-item" v-model="searchValue"></el-input>
       <el-button type="primary" style="margin-left: 10px; text-align: center;" icon="el-icon-search" @click="search">搜索</el-button>
-      <!--<el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加教材</el-button>-->
     </div>
 
     <div class="filter-container">
@@ -27,6 +26,8 @@
           :value="item.value">
         </el-option>
       </el-select>
+
+      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleCreate">添加教材</el-button>
       <br/><br/>
     </div>
 
@@ -38,61 +39,44 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="教材名称" width="150">
+      <el-table-column label="教改论文名称" width="150">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
-            <p>名称: {{ scope.row.book_name }}</p>
-            <p>ISBN: {{ scope.row.isbn }}</p>
+            <p>名称: {{ scope.row.paper_name }}</p>
+            <p>论文编号: {{ scope.row.paper_number }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.book_name }}</el-tag>
+              <el-tag size="medium">{{ scope.row.paper_name }}</el-tag>
             </div>
           </el-popover>
         </template>
       </el-table-column>
 
-      <el-table-column label="教材编号" width="100">
+      <el-table-column label="所属教师" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.book_number }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="ISBN" width="120">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.isbn }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="出版社" width="140">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.press }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="教材级别" width="150">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.book_rank }}</span>
+          <span style="margin-left: 10px">{{ scope.row.teacher_name }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="状态" width="85">
         <template slot-scope="scope">
+          <span style="margin-left: 10px" v-if="(scope.row.status == '1')">未提交</span>
           <span style="margin-left: 10px" v-if="(scope.row.status == '2')">待审核</span>
           <span style="margin-left: 10px" v-if="(scope.row.status == '3')">已存档</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="提交时间" width="200">
+      <el-table-column label="论文发表时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ format(scope.row.submit_time) }}</span>
+          <span style="margin-left: 10px">{{ format(scope.row.publish_year_month) }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="getDetail(scope.$index, scope.row)">修改信息</el-button>
-          <el-button size="mini" type="danger" @click="changeSubmit(scope.row.id, '1')" :disabled="(scope.row.status == '3')">审核退回</el-button>
-          <el-button size="mini" type="primary" @click="changeSubmit(scope.row.id, '3')" :disabled="(scope.row.status == '3')">审核通过</el-button>
+          <el-button size="mini" type="danger" @click="changeStatus(scope.row.id, '1')" :disabled="(scope.row.status == '1')">撤回提交</el-button>
+          <el-button size="mini" type="primary" @click="changeStatus(scope.row.id, '2')" :disabled="(scope.row.status == '2')">提交审核</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -109,55 +93,50 @@
       </el-pagination>
     </div>
 
-    <!-- 信息弹出框 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" size="small" label-width="80px">
         <el-form-item label="教材名称">
-          <el-input v-model="editForm.book_name" auto-complete="off"></el-input>
+          <el-input v-model="editForm.paper_name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="教材编号" >
-          <el-input v-model="editForm.book_number" auto-complete="off"></el-input>
+          <el-input v-model="editForm.paper_number" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="出版年月" >
-          <el-input v-model="editForm.publish_time" auto-complete="off"></el-input>
+        <el-form-item label="所属教师" >
+          <el-input v-model="editForm.teacher_name" auto-complete="off"  :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="教材页数" >
-          <el-input v-model="editForm.pages" auto-complete="off"></el-input>
+        <el-form-item label="所属教师工号" >
+          <el-input v-model="editForm.teacher_number" auto-complete="off"  :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="字数(千字)" >
-          <el-input v-model="editForm.words" auto-complete="off"></el-input>
+        <el-form-item label="第几作者" >
+          <el-input v-model="editForm.order" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="ISBN" >
-          <el-input v-model="editForm.isbn" auto-complete="off"></el-input>
+        <el-form-item label="期刊名称" >
+          <el-input v-model="editForm.journal_name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="出版社" >
-          <el-input v-model="editForm.press" auto-complete="off"></el-input>
+        <el-form-item label="论文发表日期" >
+          <div class="block">
+            <el-date-picker
+              value-format="timestamp"
+              v-model="editForm.publish_year_month"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </div>
         </el-form-item>
-        <el-form-item label="教材版本" >
-          <el-input v-model="editForm.version" auto-complete="off"></el-input>
+        <el-form-item label="期刊年号" >
+          <el-input v-model="editForm.journal_year" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="出版形式" >
-          <el-input v-model="editForm.style" auto-complete="off"></el-input>
+        <el-form-item label="期刊期号" >
+          <el-input v-model="editForm.journal_number" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="教材级别" >
-          <el-select v-model="editForm.rank_id" placeholder="请选择" class="filter-item">
-            <el-option
-              v-for="item in bookRankOptins"
-              :label="item.rank_name + ' ( ' + item.id + ' ) ' "
-              :key="item.id"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="所属学院" >
-          <el-input v-model="editForm.college" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="来源项目" >
-          <el-input v-model="editForm.project" auto-complete="off"></el-input>
+        <el-form-item label="期刊卷号" >
+          <el-input v-model="editForm.journal_volum" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="状态" >
-          <el-input v-model="editForm.status" auto-complete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.status" auto-complete="off"  :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="来源项目" >
+          <el-input v-model="editForm.source_project" auto-complete="off"></el-input>
         </el-form-item>
 
         <el-form-item label="封面图片" >
@@ -173,23 +152,6 @@
             :file-list="cover_path_img"
             list-type="picture">
             <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png/jpeg/gif文件，上传或删除图片后点击提交按钮才能更新</div>
-          </el-upload>
-        </el-form-item>
-
-        <el-form-item label="版权页图片" >
-          图片名称：{{editForm.copy_path}}
-          <el-upload
-            class = "upload-demo"
-            :action = "fileUploadUrl"
-            :on-preview = "handlePreview"
-            :on-success = "copyHandleSuccess"
-            :on-remove = "copyHandleRemove"
-            :multiple = "false"
-            :limit = "1"
-            :file-list="copy_path_img"
-            list-type="picture">
-            <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png/jpeg/gif文件，上传或删除图片后点击提交按钮才能更新</div>
           </el-upload>
         </el-form-item>
@@ -211,32 +173,22 @@
           </el-upload>
         </el-form-item>
 
-        <el-form-item label="参编教师" >
-          <el-input v-model="editForm.authors" auto-complete="off"></el-input>
+        <el-form-item label="论文路径" >
+          <el-input v-model="editForm.text_path" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="提交教师" >
-          <el-input v-model="editForm.teacher_name" auto-complete="off" :disabled="true"></el-input>
+        <el-form-item label="中国知网链接" >
+          <el-input v-model="editForm.cnki_url" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="提交时间" >
-          <el-input auto-complete="off" :value="format(editForm.submit_time)" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="授予时间" >
-          <div class="block">
-            <el-date-picker
-              value-format="timestamp"
-              v-model="editForm.submit_time"
-              type="date"
-              placeholder="选择日期">
-            </el-date-picker>
-          </div>
+        <el-form-item label="参与人员" >
+          <el-input v-model="editForm.participate_teacher" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="changeSubmitInfo">提 交 修 改</el-button>
+        <el-button type="primary" @click="changeSubmitInfo" v-if="dialogTitle == '编辑'">提 交 修 改</el-button>
+        <el-button type="primary" @click="createPaper" v-if="dialogTitle == '创建'">添 加 论 文</el-button>
         <el-button @click="dialogFormVisible = false">返 回</el-button>
       </div>
     </el-dialog>
-
 
     <!-- 图片预览弹出框 -->
     <el-dialog title="预览" :visible.sync="imgFormVisible">
@@ -253,41 +205,42 @@
 </template>
 
 <script>
-  import {getAllBookInfo, getDetailBookInfo, changeBookSubmit, searchBookInfo, changeSubmitInfo,statusSearchBook} from "@/api/cadmin/book";
-  import {getBookRankOptins} from "@/api/cadmin/optionInfo";
-  import {deleteFile} from "@/api/common/index";
+  import {getAllReformPaperInfo, getDetailReformPaperInfo, createItemInfo, changeSubmitInfo, reformPaperChangeStatus,
+    statusSearchReformPaper, searchReformPaperInfo} from "@/api/normal/reformPaper";
+
   import {dateFormat} from "@/utils";
 
   export default {
     inject: ['reload'],
-    name: "book",
+    name: "reform_paper",
     data() {
       return {
         options: [
-          {value: 'book_name', label: '教材名称'},
-          {value: 'teacher_name', label: '教师姓名'}
+          {value: 'reform_name', label: '教改论文名称'},
         ],
+
+        //状态搜索：  已提交/待审批 （、2提交/待审核、3存档/已审核）
         statusOptions: [
           {value: '0', label: '全部'},
-          {value: '2', label: '待审批'},
-          {value: '3', label: '已存档'},
+          {value: '1', label: '未提交'},
+          {value: '2', label: '待审核'},
+          {value: '3', label: '已审核'},
         ],
 
         //搜索
-        search_type: '',
-        search_value: '',
+        searchType: '',
+        searchValue: '',
         searchStatus: '',
 
         //表单数据
         tableData: [],
-        bookRankOptins: [],
 
         //翻页
         currentPage: 1,
         pageSize: 9,
+        dialogFormVisible: false,
 
         //弹出框
-        dialogFormVisible: false,
         dialogTitle: '编辑',
         formLabelWidth: '120px',
 
@@ -297,26 +250,22 @@
         //编辑框
         editForm: {
           id: '',
-          book_name: '',
-          book_number: '',
-          publish_time: '',
-          pages: '',
-          words: '',
-          isbn: '',
-          press:'',
-          version: '',
-          style: '',
-          rank_id: '',
-          college: '',
-          project: '',
+          paper_name: '',
+          paper_number: '',
+          journal_name: '',
+          publish_year_month: '',
+          journal_year: '',
+          journal_number: '',
+          journal_volum: '',
           status: '',
-          cover_path: '',   //图片
-          copy_path: '',    //图片
-          content_path: '', //图片
-          authors: '',
+          source_project: '',
+          cover_path: '',
+          content_path: '',
+          text_path: '',
+          cnki_url: '',
+          participate_teacher: '',
         },
-        teachers: '',
-        domains: [],
+
 
         //文件上传
         fileUploadUrl: process.env.FILE_UPLOAD_URL,
@@ -325,9 +274,9 @@
         imgObj : '', //
         cover_path_img: [
           //{name: '1.png', url: this.fileVisitUrl +'1.png' }
-          ],
-        copy_path_img: [],
+        ],
         content_path_img: [],
+
 
       }
     },
@@ -335,7 +284,7 @@
       // 如果 `searchStatus` 发生改变，这个函数就会运行
       searchStatus: function (newStatus, oldStatus) {
         if(newStatus){
-          statusSearchBook(newStatus).then(res => {
+          statusSearchReformPaper(newStatus).then(res => {
             this.tableData = res.data;
           })
         }
@@ -344,6 +293,15 @@
     },
 
     methods: {
+
+      //翻页
+      handleCurrentChange(cpage){
+        this.currentPage = cpage;
+      },
+      //时间格式化
+      format: function (time) {
+        return dateFormat(time)
+      },
 
       //文件操作功能
       //文件预览
@@ -379,12 +337,6 @@
         file.url = '';
         this.editForm.cover_path = '';//上传
       },
-      copyHandleRemove(file, fileList){
-        let res = this.handleRemove(file, fileList);
-        file.name = '';
-        file.url = '';
-        this.editForm.copy_path = '';//上传
-      },
       contentHandleRemove(file, fileList){
         let res = this.handleRemove(file, fileList);
         file.name = '';
@@ -418,14 +370,6 @@
           this.editForm.cover_path = response.data;//上传
         }
       },
-      copyHandleSuccess(response, file, fileList){
-        var res = this.handleSuccess(response, file, fileList);
-        if (res == 'success'){
-          file.name = response.data;
-          file.url = this.fileVisitUrl + response.data;
-          this.editForm.copy_path = response.data;//上传
-        }
-      },
       contentHandleSuccess(response, file, fileList){
         var res = this.handleSuccess(response, file, fileList);
         if (res == 'success'){
@@ -436,46 +380,80 @@
       },
 
 
+      //添加
+      handleCreate: function(){
+        this.editForm= {
+            id: '',
+            paper_name: '',
+            paper_number: '',
+            journal_name: '',
+            publish_year_month: '',
+            journal_year: '',
+            journal_number: '',
+            journal_volum: '',
+            status: '',
+            source_project: '',
+            cover_path: '',
+            content_path: '',
+            text_path: '',
+            cnki_url: '',
+            participate_teacher: '',
+        };
+        this.dialogTitle = '创建';
+        this.dialogFormVisible = true;
+      },
+      //提交添加的信息
+      createPaper: function(){
+        createItemInfo(
+          this.editForm.order,
+          this.editForm.paper_name,
+          this.editForm.paper_number,
+          this.editForm.journal_name,
+          this.editForm.publish_year_month,
+          this.editForm.journal_year,
+          this.editForm.journal_number,
+          //this.editForm.college_id,
+          this.editForm.journal_volum,
+          //this.editForm.status, 删除状态
+          this.editForm.source_project,
+          this.editForm.cover_path,
+          this.editForm.content_path,
+          this.editForm.text_path,
+          this.editForm.cnki_url,
+          this.editForm.participate_teacher
+        ).then(res=>{
+          if (res.status == 'success'){
+            this.$message({
+              message: res.reason,
+              type: 'success'
+            });
+            this.dialogFormVisible = false;
+            this.reload();
+          } else {
+            this.$message({
+              message: res.reason,
+              type: 'warning'
+            });
+          }
+        })
 
-
-      //表单编辑
-      handleEdit(index, row) {
-        console.log(index, row);
       },
 
-      //表单删除
-      handleDelete(index, row) {
-        console.log(index, row);
-      },
 
-      //翻页
-      handleCurrentChange(cpage){
-        this.currentPage = cpage;
-      },
-
-      //格式化时间显示
-      format: function (time) {
-        return dateFormat(time)
-      },
-
-      //获得图书详细信息
+      //获得项目详细信息
       getDetail: function (index, row) {
         let id = Object.assign({}, row).id;
-        getDetailBookInfo(id).then(res => {
+        getDetailReformPaperInfo(id).then(res => {
           this.editForm = res.data[0];
 
           //挂载图片显示
           if(this.editForm.cover_path){
             this.cover_path_img = [ {name: this.editForm.cover_path, url: this.fileVisitUrl + this.editForm.cover_path } ]
           }
-          if(this.editForm.copy_path){
-            this.copy_path_img = [ {name: this.editForm.copy_path, url: this.fileVisitUrl + this.editForm.copy_path } ]
-          }
           if(this.editForm.content_path){
             this.content_path_img = [ {name: this.editForm.content_path, url: this.fileVisitUrl + this.editForm.content_path } ]
           }
 
-          console.log(this.domains);
           this.dialogTitle = '编辑';
           this.dialogFormVisible = true;
         })
@@ -483,29 +461,50 @@
 
       //提交修改
       changeSubmitInfo: function(){
-        changeSubmitInfo(this.editForm.id, this.editForm.book_name, this.editForm.book_number, this.editForm.publish_time,
-        this.editForm.pages, this.editForm.words, this.editForm.isbn, this.editForm.press, this.editForm.version,
-          this.editForm.style, this.editForm.rank_id, this.editForm.college, this.editForm.project,
-          this.editForm.status, this.editForm.cover_path, this.editForm.copy_path, this.editForm.content_path,
-          this.editForm.authors, ).then(res=>{
-          if (res.status == 'success') {
+        changeSubmitInfo(
+          this.editForm.id,
+          this.editForm.order,
+          this.editForm.paper_name,
+          this.editForm.paper_number,
+          this.editForm.journal_name,
+          this.editForm.publish_year_month,
+          this.editForm.journal_year,
+          this.editForm.journal_number,
+          //this.editForm.college_id,
+          this.editForm.journal_volum,
+          //this.editForm.status, 删除状态
+          this.editForm.source_project,
+          this.editForm.cover_path,
+          this.editForm.content_path,
+          this.editForm.text_path,
+          this.editForm.cnki_url,
+          this.editForm.participate_teacher
+        ).then(res=>{
+          if (res.status == 'success'){
             this.$message({
-              message: '修改成功',
+              message: res.reason,
               type: 'success'
             });
+            this.dialogFormVisible = false;
             this.reload();
+          } else {
+            this.$message({
+              message: res.reason,
+              type: 'warning'
+            });
           }
+
         })
       },
 
 
-      //改变状态
-      changeSubmit: function (id, status) {
-        changeBookSubmit(id, status).then(res => {
+      //状态更变
+      changeStatus: function (id, status) {
+        reformPaperChangeStatus(id,status).then(res => {
           if (res.status == 'success') {
             this.reload();
             this.$message({
-              message: '执行成功',
+              message: '撤销提交成功',
               type: 'success'
             });
           }
@@ -514,7 +513,7 @@
 
       //查找
       search: function () {
-        searchBookInfo(this.search_type, this.search_value).then(res => {
+        searchReformPaperInfo(this.searchType, this.searchValue).then(res => {
           if (res.status == 'success') {
             this.tableData = res.data;
           }
@@ -525,21 +524,13 @@
 
     mounted: function () {
 
-      window.vue = this;
-
-      //挂载图书信息
-      getAllBookInfo().then(res => {
+      //挂载基本信息
+      getAllReformPaperInfo().then(res => {
         if (res.status == 'success') {
           this.tableData = res.data;
         }
       })
 
-      //教材等级选项
-      getBookRankOptins().then(res=>{
-        if (res.status == 'success') {
-          this.bookRankOptins = res.data;
-        }
-      })
 
 
     }

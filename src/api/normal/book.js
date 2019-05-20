@@ -23,10 +23,37 @@ export function getDetailBookInfo(id) {
   })
 }
 
+//新增item
+export function createItemInfo(book_name, book_number,order, publish_time, pages, words, isbn, press, version, style, rank_id, project, cover_path, copy_path, content_path, authors) {
+  return request({
+    url: '/normal/book/create',
+    method: 'post',
+    data: {
+      book_name: book_name,
+      book_number: book_number,
+      order:order,
+      publish_time: publish_time,
+      pages: pages,
+      words: words,
+      isbn: isbn,
+      press: press,
+      version: version,
+      style: style,
+      rank_id: rank_id,
+      project: project,
+      cover_path: cover_path,
+      copy_path: copy_path,
+      content_path: content_path,
+      authors: authors,
+      token: store.getters.token
+    }
+  })
+}
+
 //改变状态
 export function changeBookStatus(id,status) {
   return request({
-    url: '/cadmin/book/changestatus',
+    url: '/normal/book/changestatus',
     method: 'post',
     data: {
       id: id,
@@ -36,8 +63,8 @@ export function changeBookStatus(id,status) {
 }
 
 //修改信息
-export function changeSubmitInfo(id, book_name, book_number, publish_time, pages, words, isbn, press,
-                                 version, style, rank_id, college, project, status, cover_path,
+export function changeSubmitInfo(id, book_name, book_number, order, publish_time, pages, words, isbn, press,
+                                 version, style, rank_id, college, project, cover_path,
                                  copy_path, content_path, authors) {
   return request({
     url: '/normal/book/submitInfo/change',
@@ -46,6 +73,7 @@ export function changeSubmitInfo(id, book_name, book_number, publish_time, pages
       id: id,
       book_name: book_name,
       book_number: book_number,
+      order:order,
       publish_time: publish_time,
       pages: pages,
       words: words,
@@ -60,6 +88,7 @@ export function changeSubmitInfo(id, book_name, book_number, publish_time, pages
       copy_path: copy_path,
       content_path: content_path,
       authors: authors,
+      token: store.getters.token
     }
   })
 }
