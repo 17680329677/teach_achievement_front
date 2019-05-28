@@ -339,8 +339,9 @@
             this.tableData = res.data;
           })
         }
-
       }
+
+
     },
 
     methods: {

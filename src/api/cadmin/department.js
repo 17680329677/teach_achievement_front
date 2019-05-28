@@ -77,5 +77,40 @@ export function departmentDelete(id){
   })
 }
 
+//-----------------------专业信息 操作---------------------
 
+//专业信息 查找
+export function departmentMajorGet(id){
+  return request({
+    url: "/cadmin/department/major/get",
+    method: "post",
+    data:{
+      id: id
+    }
+  })
+}
+
+//专业信息 添加
+export function departmentMajorAdd(department_id, major_name){
+  return request({
+    url: "/cadmin/department/major/add",
+    method: "post",
+    data:{
+      department_id: department_id,
+      major_name: major_name,
+      token: store.getters.token,
+    }
+  })
+}
+
+//专业信息 删除
+export function departmentMajorDel(id){
+  return request({
+    url: "/cadmin/department/major/del",
+    method: "post",
+    data:{
+      id: id,
+    }
+  })
+}
 

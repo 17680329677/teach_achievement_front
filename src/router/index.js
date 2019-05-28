@@ -288,15 +288,21 @@ export const asyncRouterMap = [   //配置路由，这里是个数组
   { //大类分流
     path: '/distribution',
     component: Layout,
-    redirect: '/distribution/info_import',
+    redirect: '/distribution/class_info',
     name: 'distribution',
     meta: { title: '大类分流', icon: 'table', roles: ['cadmin'] },
     children: [
       {
+        path: 'class_info',
+        name: 'class_info',
+        component: () => import('@/views/cadmin/distribution/class_info'),
+        meta: { title: '班级信息', icon: 'form' }
+      },
+      {
         path: 'info_import',
         name: 'info_import',
         component: () => import('@/views/cadmin/distribution/info_import'),
-        meta: { title: '信息导入', icon: 'form' }
+        meta: { title: '学生信息导入', icon: 'form' }
       },
       {
         path: 'config',
@@ -305,17 +311,18 @@ export const asyncRouterMap = [   //配置路由，这里是个数组
         meta: { title: '分流配置', icon: 'form' }
       },
       {
-        path: 'result',
-        name: 'result',
-        component: () => import('@/views/cadmin/distribution/result'),
-        meta: { title: '分流结果', icon: 'form' }
-      },
-      {
         path: 'desire',
         name: 'desire',
         component: () => import('@/views/cadmin/distribution/desire'),
         meta: { title: '志愿填报情况', icon: 'form' }
+      },
+      {
+        path: 'result',
+        name: 'result',
+        component: () => import('@/views/cadmin/distribution/result'),
+        meta: { title: '分流结果', icon: 'form' }
       }
+
     ]
   },
 

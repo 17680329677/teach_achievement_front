@@ -33,11 +33,18 @@
         </template>
       </el-table-column>
 
+      <el-table-column label="包含专业" width="300">
+        <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium" style="margin-left: 5px;" :key="index" v-for="(major,index) in scope.row.majors">{{ major.major_name}}</el-tag>
+          </div>
+
+        </template>
+      </el-table-column>
+
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">基本信息</el-button>
           <el-button
             size="mini"
             type="info"
@@ -46,11 +53,9 @@
             detailFormVisible = true,
             addTeacherForm.departmentId = scope.row.id
             getThisDepartmentTeachers(scope.row.id)
-                    ">详情</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="deleteInfo(scope.$index, scope.row)">删除</el-button>
+                    ">成员信息</el-button>
+          <el-button size="mini" @click="addMajorForm.department_id = scope.row.id , getMajors(scope.row.id) ">专业信息</el-button>
+          <el-button size="mini" type="danger" @click="deleteInfo(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -102,7 +107,7 @@
     </el-dialog>
     <!-- 基本信息编辑框 end -->
 
-    <!-- 二级信息编辑框（） begin -->
+    <!-- 教研室成员成员信息编辑框（） begin -->
     <!-- detail Table -->
     <el-dialog :title="detailFormTitle + ' ' +'详情' " :visible.sync="detailFormVisible">
       <h3>教研室成员：</h3>
@@ -159,7 +164,58 @@
       </div>
     </el-dialog>
 
-    <!-- 二级信息编辑框（） end -->
+    <!-- 教研室成员成员信息编辑框（） end -->
+
+    <!-- 专业信息编辑框（） begin -->
+    <!-- detail Table -->
+    <el-dialog title="专业信息管理" :visible.sync="majorFormVisible">
+      <h3>包含专业：</h3>
+      <el-table :data="majorInDepartment" style="width: 100%" border>
+
+        <el-table-column label="序号" width="50">
+          <template slot-scope="scope">
+            <span style="margin-left: 10px">{{ scope.$index+1 }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="专业名称" width="300">
+          <template slot-scope="scope">
+            <span style="margin-left: 10px">{{ scope.row.major_name }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="delMajor(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-form :model="addMajorForm" style="margin-top: 30px">
+        <el-form-item label="添加专业"  :label-width="formLabelWidth">
+
+          <el-form-item label="专业名称" :label-width="formLabelWidth">
+            <el-input v-model="addMajorForm.major_name" auto-complete="off"></el-input>
+          </el-form-item>
+
+          <el-button
+            type="primary"
+            @click="addMajor">添加专业</el-button>
+        </el-form-item>
+      </el-form>
+
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="majorFormVisible = false">返 回</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 专业信息编辑框（） end -->
+
+
 
   </div>
 
@@ -168,7 +224,8 @@
 
 <script>
   import { getDepatmentInfo, departmentAdd, departmentDelete, departmentUpdate, //基本信息操作
-    departmentAddTeacher,departmentDeleteTeacher  //子信息操作
+    departmentAddTeacher,departmentDeleteTeacher,  //子信息操作
+    departmentMajorGet, departmentMajorAdd, departmentMajorDel//专业操作
   } from '@/api/cadmin/department';
 
   import {
@@ -185,6 +242,7 @@
         tableData: [],  //首次加载 主页表格中要显示的数据
         teacherOptions: [],  //选择教研室主任时存放本学院的教师工号和姓名  [显示]
         teachersInDepartment: [],//当前教研室详细信息中教师名单
+        majorInDepartment: [],//教研室包含专业列表
 
         //页号
         currentPage: 1,
@@ -195,10 +253,13 @@
         dialogFormVisible: false,
         dialogTitle: '编辑',
         formLabelWidth: '120px',
-          //详细信息
+          //成员详细信息
         detailFormVisible: false,
         detailFormTitle: '详情',
         //detailFormLabelWidth: '200px',
+
+          //专业信息框
+        majorFormVisible: false,
 
         //提交的数据组
         editForm: {
@@ -210,6 +271,13 @@
         addTeacherForm: { //添加教师到教研室
           number: '',
           departmentId: ''
+        },
+
+        addMajorForm:{
+          id: '',
+          major_name: '',
+          college_id: '',
+          department_id: ''
         },
 
         //其他
@@ -331,7 +399,7 @@
         }
       },
 
-      //---------------------------详细信息操作---------------------------
+      //---------------------------教研室成员信息信息操作---------------------------
       //添加教师到教研室
       addTeacher: function () {
         departmentAddTeacher(this.addTeacherForm.departmentId,this.addTeacherForm.number).then(res => {
@@ -370,9 +438,67 @@
         })
       },
 
+
+      //---------------------------教研室所属专业信息操作---------------------------
+
+      //按照教研室id查询
+      getMajors: function (id) {
+        this.addMajorForm.major_name = '';
+        departmentMajorGet(id).then(res=>{
+            this.majorInDepartment =  res.data;
+            this.majorFormVisible = true;
+        })
+
+      },
+
+      //添加
+      addMajor: function( ) {
+        departmentMajorAdd( this.addMajorForm.department_id, this.addMajorForm.major_name ).then(res=>{
+          if (res.status == 'success'){
+            this.$message({
+              message: res.reason,
+              type: 'success'
+            });
+            departmentMajorGet( this.addMajorForm.department_id ).then(res=>{
+              this.majorInDepartment =  res.data;
+            })
+          } else {
+            this.$message({
+              message: res.reason,
+              type: 'warning'
+            });
+          }
+        })
+
+      },
+
+      //删除
+      delMajor: function(id) {
+        departmentMajorDel(id).then(res=>{
+          if (res.status == 'success'){
+            this.$message({
+              message: res.reason,
+              type: 'success'
+            });
+            departmentMajorGet( this.addMajorForm.department_id ).then(res=>{
+              this.majorInDepartment =  res.data;
+            })
+          } else {
+            this.$message({
+              message: res.reason,
+              type: 'warning'
+            });
+          }
+        })
+      },
+
+
     },
 
     mounted: function () {
+
+      window.vue = this;
+
       //挂载页面中Table的数据
       getDepatmentInfo().then(res => {
         this.tableData = res.data;

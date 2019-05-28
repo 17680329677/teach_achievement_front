@@ -9,6 +9,8 @@ import store from "../../store";
     4.学院教师信息【id+name+department_id】
     5.教研室教师信息【id+name+department_id】
     6.教材等级选项
+
+    11.班级信息
 */
 
 //1.挂载 学院选项信息
@@ -65,5 +67,53 @@ export function getBookRankOptins() {
   })
 }
 
+//7.教改项目等级 ProjectRank
+export function getProjectRankOptins() {
+  return request({
+    url: '/cadmin/project_rank_options/get',
+    method: 'get',
+  })
+}
 
+//8.教改项目类型 ProjectType
+export function getProjectTypekOptins() {
+  return request({
+    url: '/cadmin/project_type_options/get',
+    method: 'get',
+  })
+}
 
+//9.教改项目子类型 ProjectChildType
+export function getProjectChildTypeOptins() {
+  return request({
+    url: '/cadmin/project_child_type_options/get',
+    method: 'get',
+  })
+}
+
+//10.大创等级 InnovationRank
+export function getInnovationRankOptins() {
+  return request({
+    url: '/cadmin/innovation_rank_options/get',
+    method: 'get',
+  })
+}
+
+//11. 班级信息选项
+export function getClassOptins() {
+  return request({
+    url: '/cadmin/class_options/get',
+    method: 'get',
+  })
+}
+
+//11. 志愿信息选项
+export function getDistributionOptins() {
+  return request({
+    url: '/cadmin/distribution_options/get',
+    method: "post",
+    data:{
+      token: store.getters.token
+    }
+  })
+}
