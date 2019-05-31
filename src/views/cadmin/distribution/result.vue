@@ -28,7 +28,7 @@
         </el-option>
       </el-select>
 
-      <el-button type="primary" style="margin-left: 10px; text-align: center;float: right" @click="export2Excel">导出数据</el-button>
+      <el-button type="success" style="margin-left: 10px; text-align: center;float: right" @click="export2Excel">导出数据</el-button>
       <br/><br/>
     </div>
 
@@ -180,12 +180,12 @@
           const filterVal = ['student_id', 'student_name','orientation_name','status'];
           // 上面的index、phone_Num、school_Name是tableData里对象的属性
           const list = tempTableData;  //把data里的tableData存到list
-          const data = this.formatJson(filterVal, list);
-          export_json_to_excel(tHeader, data, '列表excel');
+          const data = this.exportDataFormatJson(filterVal, list);
+          export_json_to_excel(tHeader, data, '学生分流结果');
         })
       },
       //将导出的数据格式化json
-      formatJson: function(filterVal, jsonData) {
+      exportDataFormatJson: function(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))
       }
 

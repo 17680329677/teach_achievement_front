@@ -28,3 +28,14 @@ export function statusSearchDistributionDesire(if_choose){
     }
   })
 }
+
+//一键分流
+export function distribution(){
+  return request({
+    url: "/cadmin/distribution_desire/distribute",
+    method: "post",
+    data:{
+      token: store.getters.token
+    }
+  })
+}

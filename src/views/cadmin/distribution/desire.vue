@@ -12,6 +12,7 @@
         </el-option>
       </el-select>
 
+      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleDistribute">一键分流</el-button>
       <br/><br/>
     </div>
 
@@ -74,7 +75,7 @@
 </template>
 
 <script>
-  import { getDistributionDesire, statusSearchDistributionDesire } from "@/api/cadmin/distributionDesire";
+  import { getDistributionDesire, statusSearchDistributionDesire, distribution } from "@/api/cadmin/distributionDesire";
   import { getClassOptins, getDistributionOptins } from "@/api/cadmin/optionInfo";
 
   import {dateFormat} from "@/utils";
@@ -149,7 +150,25 @@
           }
         });
         return name;
-      }
+      },
+
+      //一键分流
+      handleDistribute: function( ) {
+        distribution().then(res=>{
+          if (res.status == 'success'){
+            this.$message({
+              message: res.reason,
+              type: 'success'
+            });
+          } else {
+            this.$message({
+              message: res.reason,
+              type: 'warning'
+            });
+          }
+        })
+
+      },
 
 
 

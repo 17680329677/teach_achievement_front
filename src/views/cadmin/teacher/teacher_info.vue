@@ -18,7 +18,7 @@
 
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
       <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleAdd">添加教师</el-button>
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="el-icon-edit" @click="">信息导入</el-button>
+      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="" @click="export2Excel">导出数据</el-button>
       <br/><br/>
     </div>
 
@@ -50,13 +50,15 @@
 
       <el-table-column label="是否在编" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.status }}</span>
+          <span style="margin-left: 10px;color:#97a6ff" v-if="(scope.row.status == '1')">是</span>
+          <span style="margin-left: 10px;color:gray" v-if="(scope.row.status == '0')">否</span>
         </template>
       </el-table-column>
 
       <el-table-column label="双肩挑" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.type }}</span>
+          <span style="margin-left: 10px;color:goldenrod" v-if="(scope.row.type == '1')">是</span>
+          <span style="margin-left: 10px;color:green" v-if="(scope.row.type == '0')">否</span>
         </template>
       </el-table-column>
 
@@ -283,6 +285,7 @@
   import { getCollegeOptions, getDepartmentOptions, getTeacherTitleOption,  //选项信息挂载
   } from '@/api/cadmin/optionInfo';
 
+  import { Blob, Export2Excel } from "@/api/common/Export2Excel";
 
   export default {
     inject: ['reload'],
@@ -290,6 +293,16 @@
     //数据展示
     data() {
       return {
+
+        //搜索
+        options:[
+          {value: 'techer_number', label: '教师工号'},
+          {value: 'techer_name', label: '教师姓名'}
+          ],
+        search_type:'',
+        search_value:'',
+
+
         //加载显示数据组
         tableData: [],  //首次加载 主页表格中要显示的数据
 
@@ -479,6 +492,47 @@
 
       //---------------------------详细信息操作---------------------------
 
+
+
+
+
+      //-----------------------------------导出excel-----------------------------------
+      export2Excel: function() {
+        var tempTableData = this.tableData;
+
+        //--------导出之前对数据格式化---------
+        tempTableData.forEach(function(item,index){
+          if(item.status == '1' ){
+            item.status = '是';
+          } else if(item.status == '0'){
+            item.status = '否';
+          }
+
+          if(item.type == '1' ){
+            item.type = '是';
+          } else if(item.type == '0'){
+            item.type = '否';
+          }
+        });
+        //-----------格式化End---------------
+
+        require.ensure([], () => {
+          const { export_json_to_excel } = require('@/api/common/Export2Excel');
+          const tHeader = ['工号', '姓名', '所属教研室','是否在编','双肩挑'];
+          // 上面设置Excel的表格第一行的标题
+          const filterVal = ['number', 'number','number','status','type'];
+          // 上面的index、phone_Num、school_Name是tableData里对象的属性
+          const list = tempTableData;  //把data里的tableData存到list
+          const data = this.exportDataFormatJson(filterVal, list);
+          export_json_to_excel(tHeader, data, '本学院教师信息');
+        })
+      },
+      //将导出的数据格式化json
+      exportDataFormatJson: function(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      }
+      //-------------------------------------导出 End-------------------------------------
+
     },
 
     mounted: function () {
@@ -509,7 +563,7 @@
       });
 
       //挂载 教师职称、管理职称 选项选项信息
-      getTeacherTitleOptions().then(res =>{
+      getTeacherTitleOption().then(res =>{
         this.teacherTitleOptions = res.data;
       });
 

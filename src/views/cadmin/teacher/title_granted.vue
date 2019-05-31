@@ -18,7 +18,7 @@
 
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
       <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleAdd">职称授予</el-button>
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="el-icon-edit" @click="">职称授予记录导入</el-button>
+      <!-- <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="el-icon-edit" @click="">职称授予记录导入</el-button>-->
       <br/><br/>
     </div>
 
@@ -56,7 +56,7 @@
 
       <el-table-column label="授予时间" >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.datetime }}</span>
+          <span style="margin-left: 10px">{{ format(scope.row.datetime) }}</span>
         </template>
       </el-table-column>
 
@@ -153,6 +153,8 @@
 
   import { getTeacherTitleOption, getTeacherOptions, } from '@/api/cadmin/optionInfo';
 
+  import {dateFormat} from "@/utils";
+
   export default {
     inject: ['reload'],
     name: "title_granted",
@@ -201,6 +203,10 @@
     },
     //方法
     methods: {
+
+      format: function (time) {
+        return dateFormat(time)
+      },
 
       //---------------------------相关信息显示---------------------------
 

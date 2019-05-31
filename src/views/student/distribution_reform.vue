@@ -3,18 +3,23 @@
     <h3>志愿填报</h3>
 
     <div class="filter-container">
-      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">姓 名：{{ sutdentInfo.name }}</span>
-      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">学 号：{{ sutdentInfo.id }}</span>
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">姓 名：<span style="color: #97a6ff">{{ sutdentInfo.name }}</span> </span>
+    </div>
+    <div class="filter-container">
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">学 号：<span style="color: #97a6ff">{{ sutdentInfo.id }}</span> </span>
     </div>
 
     <div class="filter-container">
-      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">学 院：{{ sutdentInfo.college_id }}</span>
-      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">班 级：{{ sutdentInfo.class_id }}</span>
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">学 院：<span style="color: #97a6ff">{{ sutdentInfo.college_name }}</span> </span>
     </div>
-
     <div class="filter-container">
-      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">大 一 学 年 学 分 成 绩：{{ sutdentInfo.gpa }}</span>
-      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">排 名： 1/1050</span>
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">班 级：<span style="color: #97a6ff">{{ sutdentInfo.class_name }}</span> </span>
+    </div>
+    <div class="filter-container">
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">大 一 学 年 学 分 成 绩(GPA)：<span style="color: #97a6ff">{{ sutdentInfo.gpa }}</span> </span>
+    </div>
+    <div class="filter-container">
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">GPA 排 名： <span style="color: #97a6ff">{{ sutdentInfo.gpa_rank }} / {{ sutdentInfo.student_quantity }}</span> </span>
     </div>
 
     <hr>
@@ -46,7 +51,7 @@
 </template>
 
 <script>
-
+  import { getDistributionResult } from '@/api/student/distribution_reform'
   export default {
     inject: ['reload'],
     name: "reform",
@@ -54,7 +59,7 @@
     data() {
       return {
         //加载显示数据组
-        tableData: [],
+        resultData: [],
         sutdentInfo: {},
 
         //基本信息
@@ -70,6 +75,17 @@
         },
 
       }
+    },
+
+    mounted: function () {
+      window.vue = this;
+
+      //结果
+      getDistributionResult().then(res => {
+        if (res.status == 'success') {
+          this.sutdentInfo = res.data;
+        }
+      })
     }
 
 

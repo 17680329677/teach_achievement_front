@@ -10,7 +10,7 @@ import store from "../../store";
     5.教研室教师信息【id+name+department_id】
     6.教材等级选项
 
-    11.班级信息
+    12.班级信息
 */
 
 //1.挂载 学院选项信息
@@ -107,7 +107,7 @@ export function getClassOptins() {
   })
 }
 
-//11. 志愿信息选项
+//12. 志愿信息选项
 export function getDistributionOptins() {
   return request({
     url: '/cadmin/distribution_options/get',
