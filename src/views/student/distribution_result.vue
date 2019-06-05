@@ -20,7 +20,7 @@
 
     <!-- 信息弹出框 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-      <el-form :model="editForm" size="small" label-width="80px">
+      <el-form  size="small" label-width="80px">
 
         <el-form-item label="密码">
           <el-input v-model="password" type="password" auto-complete="off"></el-input>
