@@ -7,11 +7,17 @@
       <br/><br/>
     </div>
 
-    <el-table :data="tableData.slice((currentPage-1)*pageSize, currentPage*pageSize)" style="width: 100%" border>
+    <el-table :data="tableData.slice((currentPage-1)*pageSize, currentPage*pageSize)" style="width: 80%;margin: 0 auto;" border>
 
-      <el-table-column label="序号" width="100">
+      <!-- <el-table-column label="序号" width="100">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.$index+1 }}</span>
+        </template>
+      </el-table-column>-->
+
+      <el-table-column label="学院编号" width="180">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
@@ -21,13 +27,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="学院编号" width="180">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.college_id }}</span>
-        </template>
-      </el-table-column>
-
-
+      <!--
       <el-table-column label="教研室数量" width="180">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.department_num }}</span>
@@ -39,16 +39,13 @@
           <span style="margin-left: 10px">{{ scope.row.teacher_num }}</span>
         </template>
       </el-table-column>
+      -->
 
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             size="mini"
             @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button
-            size="mini"
-            type="info"
-            @click="">详情</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -71,18 +68,19 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm">
+        <el-form-item label="学院编号" :label-width="formLabelWidth">
+          <el-input v-model="editForm.id" auto-complete="off"></el-input>
+        </el-form-item>
         <el-form-item label="学院名称" :label-width="formLabelWidth">
           <el-input v-model="editForm.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="学院编号" :label-width="formLabelWidth">
-          <el-input v-model="editForm.college_id" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="教研室数量" :label-width="formLabelWidth">
+        <!--
+        <el-form-item label="教研室数量" :label-width="formLabelWidth" >
           <el-input v-model="editForm.department_num" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="教师人数" :label-width="formLabelWidth">
+        <el-form-item label="教师人数" :label-width="formLabelWidth" >
           <el-input v-model="editForm.teacher_num" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -104,8 +102,10 @@
       data() {
         return {
           tableData: [],
+
           currentPage: 1,
           pageSize: 9,
+
           dialogFormVisible: false,
           dialogTitle: '编辑',
           formLabelWidth: '120px',
@@ -162,7 +162,7 @@
         },
 
         update: function() {
-          collegeUpdate(this.editForm.id, this.editForm.name, this.editForm.college_id).then(res => {
+          collegeUpdate(this.editForm.id, this.editForm.name).then(res => {
             if (res.status == 'success'){
               this.dialogFormVisible = false;
               this.$message({
@@ -181,7 +181,7 @@
 
         addCollege: function () {
           // this.dialogFormVisible = true;
-          collegeAdd(this.editForm.name, this.editForm.college_id).then(res => {
+          collegeAdd( this.editForm.id,this.editForm.name).then(res => {
             if (res.status == 'success'){
               this.dialogFormVisible = false;
               this.$message({

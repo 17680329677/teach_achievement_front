@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
-      <span class="filter-item" style="margin-left: 350px; font-family: PingFang SC; font-size: 25px;">检索</span>
+      <span class="filter-item" style="margin-left: 0px; font-family: PingFang SC; font-size: 25px;">检索</span>
       <el-select v-model="search_type" placeholder="请选择" class="filter-item" style="margin-left: 20px">
         <el-option
           v-for="item in options"
@@ -15,7 +15,7 @@
       <el-button type="primary" style="margin-left: 10px; text-align: center;" icon="el-icon-search" @click="search">搜索</el-button>
 
 
-      <el-button class="filter-item"  style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit">添加</el-button>
+      <el-button class="filter-item"  style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleAdd">添加</el-button>
       <br/><br/>
     </div>
 
@@ -26,52 +26,25 @@
         </template>
       </el-table-column>
 
+      <el-table-column label="学院管理员" width="180">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.number }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column label="所属学院" width="180">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.college_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="学院编号" width="150">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.college_id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="教务秘书" width="180">
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.secretary_name }}</p>
-            <p>联系电话: {{ scope.row.phone }}</p>
-            <p>工号: {{ scope.row.number }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.secretary_name }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="联系方式" width="180">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.phone }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="邮箱" width="200">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
 
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="recall(scope.$index, scope.row)">撤销</el-button>
-          <el-button
-            size="mini"
-            type="info"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            type="success"
+            @click="resetPwd(scope.$index, scope.row)">重置密码</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -94,40 +67,47 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" :rules="editRules" ref="editForm">
-        <el-form-item label="所属学院" :label-width="formLabelWidth">
-          <el-input v-model="editForm.college_name" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="学院编号" :label-width="formLabelWidth">
-          <el-input v-model="editForm.college_id" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="秘书姓名" :label-width="formLabelWidth">
-          <el-input v-model="editForm.secretary_name" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
         <el-form-item label="工号" :label-width="formLabelWidth">
-          <el-input v-model="editForm.number" auto-complete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.number" auto-complete="off" ></el-input>
         </el-form-item>
+
+        <el-form-item label="所属学院"  :label-width="formLabelWidth">
+          <el-select v-model="editForm.college_id" placeholder="请选择" class="filter-item">
+            <el-option
+              v-for="item in collegeOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <!--
         <el-form-item label="联系方式" :label-width="formLabelWidth" prop="phone">
           <el-input v-model="editForm.phone" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="editForm.email" auto-complete="off"></el-input>
         </el-form-item>
+        -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="update">确 定</el-button>
+        <el-button type="primary" @click="add">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import {getAllSecretaryInfo, recallSecretary, updateSecretary, searchSecretary} from '../../api/sadmin/secretary';
+  import {getAllSecretaryInfo, secretaryAdd, secretaryResetPassword, secretaryDelete, searchSecretary} from '../../api/sadmin/secretary';
+  import { getAllCollegeInfo } from '../../api/sadmin/college';
   import {isValidatePhone, isValidateEmail} from '@/utils/validate';
     export default {
       inject: ['reload'],
       name: "academicSecretary",
       data() {
+
         // 手机号验证
         const validatePhone = (rule, value, callback) => {
           if (!isValidatePhone(value)) {
@@ -147,28 +127,27 @@
 
         return {
           options: [{
-            value: 'secretary_name',
-            label: '姓名'
+            value: 'number',
+            label: '账号'
           }, {
             value: 'college_name',
-            label: '学院'
+            label: '学院名称'
           }],
+
+          collegeOptions: [],
+
           currentPage: 1,
           pageSize: 9,
           tableData: [],
           search_type: '',
           search_value: '',
           dialogFormVisible: false,
-          dialogTitle: '编辑',
+          dialogTitle: '添加',
           formLabelWidth: '120px',
           editForm: {
-            id: '',
+            number: '',
             college_name: '',
-            college_id: '',
-            secretary_name: '',
-            phone: '',
-            email: '',
-            number: ''
+            college_id: ''
           },
           editRules: {
             phone: [{ require: true, trigger: 'blur', validator: validatePhone }],
@@ -177,52 +156,93 @@
         }
       },
       methods: {
-        handleEdit(index, row) {
-          this.editForm = Object.assign({}, row);
-          this.dialogFormVisible = true;
-        },
-        handleDelete(index, row) {
-          console.log(index, row);
-        },
-
-        getSecretaryInfo: function () {
-          getAllSecretaryInfo().then(res => {
-            if (res.status == 'success'){
-              this.tableData = res.data;
-            } else {
-              this.$message({
-                message: res.reason,
-                type: 'warning'
-              })
-            }
-          })
-        },
 
         handleCurrentChange(cpage){
           this.currentPage = cpage;
         },
 
-        recall: function (index, row) {
+        handleDelete(index, row) {
           this.editForm = Object.assign({}, row);
-          this.$confirm('此操作将撤销'+ this.editForm.secretary_name + '的教务秘书权限，是否继续?', '提示', {
+          this.$confirm('此操作将永久删除管理员账号, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            recallSecretary(this.editForm.id).then(res => {
+            secretaryDelete(this.editForm.number).then(res => {
               if (res.status == 'success'){
-                this.$message({message: '撤销成功！', type: 'success'});
+                this.$message({
+                  message: res.reason,
+                  type: 'success'
+                });
                 this.reload();
-              } else {
-                this.$message({message: res.reason, type: 'warning'})
               }
             })
           }).catch(() => {
             this.$message({
               type: 'info',
-              message: '已取消'
+              message: '已取消删除'
             });
           });
+        },
+
+        handleAdd: function(){
+          this.editForm = {
+            number: '',
+              college_name: '',
+              college_id: ''
+          },
+          this.dialogFormVisible = true;
+        },
+
+        add: function(){
+          secretaryAdd(this.editForm.number, this.editForm.college_id).then(res => {
+            if (res.status == 'success'){
+              this.$message({
+                type: 'success',
+                message: res.reason
+              });
+              this.dialogFormVisible = false;
+              this.reload();
+            } else {
+              this.$message({
+                type: 'warning',
+                message: res.reason
+              })
+            }
+          })
+        },
+
+        //重设密码
+        resetPwd(index, row) {
+          this.editForm = Object.assign({}, row)
+          this.$confirm('将重设此学院管理员密码为123456, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            secretaryResetPassword(this.editForm.number).then(res => {
+              if (res.status == 'success'){
+                this.$message({
+                  message: res.reason,
+                  type: 'success'
+                });
+                this.reload();
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+        },
+
+
+        /*
+
+        handleEdit(index, row) {
+          this.editForm = Object.assign({}, row);
+          this.dialogFormVisible = true;
         },
 
         update: function () {
@@ -248,11 +268,9 @@
               return false;
             }
           })
-        },
+        },*/
 
         search: function () {
-          console.log('搜索项：' + this.search_type);
-          console.log('内容：' + this.search_value);
           searchSecretary(this.search_type, this.search_value).then(res => {
             if (res.status == 'success'){
               this.tableData = res.data;
@@ -268,8 +286,23 @@
       },
 
       mounted: function () {
-        this.getSecretaryInfo();
+
+        getAllSecretaryInfo().then(res => {
+          if (res.status == 'success'){
+            this.tableData = res.data;
+          }
+        });
+
+        getAllCollegeInfo().then(res => {
+          if (res.status == 'success'){
+            this.collegeOptions = res.data;
+          }
+        });
+
+
       }
+
+
     }
 </script>
 

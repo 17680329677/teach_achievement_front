@@ -21,7 +21,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="是否为学生参与的项目" width="200">
+      <el-table-column label="是否为学生参与的项目" width="100">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.student_attend }}</span>
         </template>

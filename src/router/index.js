@@ -61,23 +61,39 @@ export const asyncRouterMap = [   //配置路由，这里是个数组
     component: Layout,
     redirect: '/secretary/index',
     name: 'secretary',
-    meta: { title: '教务秘书', icon: 'example', roles: ['sadmin'] },
+    meta: { title: '账号分配', icon: 'example', roles: ['sadmin'] },
     children: [
         {
           path: 'index',
           name: 'manage',
           component: () => import('@/views/sadmin_college/academicSecretary'),
-          meta: { title: '教务秘书管理', icon: 'peoples' }
+          meta: { title: '学院账号分配', icon: 'peoples' }
         }
       ]
   },
 
   {
-    path: '/rank',
+    path: '/rankteacherCategory',
+    component: Layout,
+    redirect: '/rank/teacherCategory',
+    name: 'rankteacherCategory',
+    meta: { title: '教师类型', icon: 'example', roles: ['sadmin'] },
+    children: [
+      {
+        path: 'index',
+        name: 'teacherCategory',
+        component: () => import('@/views/sadmin_college/rank/teacherCategory'),
+        meta: { title: '教师类型配置', icon: 'peoples' }
+      }
+    ]
+  },
+
+  {
+    path: '/rankTitlerank',
     component: Layout,
     redirect: '/rank/titlerank',
-    name: 'rank',
-    meta: { title: '信息配置', icon: 'nested', roles: ['sadmin'] },
+    name: 'rankTitlerank',
+    meta: { title: '教师职称', icon: 'nested', roles: ['sadmin'] },
     children: [
       {
         path: 'titlerank',
@@ -85,46 +101,100 @@ export const asyncRouterMap = [   //配置路由，这里是个数组
         component: () => import('@/views/sadmin_college/rank/titleRank'),
         meta: { title: '教师职称配置', icon: 'peoples' }
       },
+    ]
+  },
+
+  {
+    path: '/rankCertificate',
+    component: Layout,
+    redirect: '/rank/certificate',
+    name: 'rankCertificate',
+    meta: {title: '证书等级', icon: 'nested', roles: ['sadmin']},
+    children: [
       {
         path: 'certificate',
         name: 'certificate',
         component: () => import('@/views/sadmin_college/rank/certificate'),
         meta: { title: '证书等级配置', icon: 'paper' }
-      },
+      }
+    ]
+  },
+  {
+    path: '/rankBookclass',
+    component: Layout,
+    redirect: '/rank/bookclass',
+    name: 'rankBookclass',
+    meta: {title: '教材等级', icon: 'nested', roles: ['sadmin']},
+    children: [
       {
         path: 'bookclass',
         name: 'book',
         component: () => import('@/views/sadmin_college/rank/bookClass'),
         meta: { title: '教材等级配置', icon: 'book' }
       },
-              //教改项目类型配置
+    ]
+  },
+  {
+    path: '/rankReformType',
+    component: Layout,
+    redirect: '/rank/reformType',
+    name: 'rankReformType',
+    meta: {title: '教改项目类型', icon: 'nested', roles: ['sadmin']},
+    children: [
+      //教改项目类型配置
       {
         path: 'reformType',
         name: 'type',
         component: () => import('@/views/sadmin_college/rank/teachReform/type'),
         meta: { title: '教改项目类型配置', icon: 'project'  }
       },
+    ]
+  },
+  {
+    path: '/rankReformChildType',
+    component: Layout,
+    redirect: '/rank/reformChildType',
+    name: 'rankReformChildType',
+    meta: {title: '教改项目子类型', icon: 'nested', roles: ['sadmin']},
+    children: [
       {
         path: 'reformChildType',
         name: 'childType',
         component: () => import('@/views/sadmin_college/rank/teachReform/childType'),
         meta: { title: '教改项目子类型配置', icon: 'project' }
       },
+    ]
+  },
+  {
+    path: '/rankReformRank',
+    component: Layout,
+    redirect: '/rank/reformRank',
+    name: 'rankReformRank',
+    meta: {title: '教改项目等级', icon: 'nested', roles: ['sadmin']},
+    children: [
       {
         path: 'reformRank',
         name: 'reformRank',
         component: () => import('@/views/sadmin_college/rank/teachReform/reformRank'),
         meta: { title: '教改项目等级配置' , icon: 'project'}
       },
-                //教改项目类型配置  end
+    ]
+  },
+  //教改项目类型配置  end
+  {
+    path: '/rankInnovation',
+    component: Layout,
+    redirect: '/rank/innovation',
+    name: 'rankInnovation',
+    meta: {title: '大创等级', icon: 'nested', roles: ['sadmin']},
+    children: [
+
       {
         path: 'innovation',
         name: 'innovation',
         component: () => import('@/views/sadmin_college/rank/innovation'),
         meta: { title: '大创等级配置', icon: 'innovation' }
       },
-
-
     ]
   },
 

@@ -7,14 +7,13 @@ export function getAllCollegeInfo() {
   })
 }
 
-export function collegeUpdate(id, college_name, college_id) {
+export function collegeUpdate(id, college_name) {
   return request({
     url: '/sadmin/college/update',
     method: 'post',
     data: {
       id: id,
-      college_name: college_name,
-      college_id: college_id
+      college_name: college_name
     }
   })
 }
@@ -29,13 +28,13 @@ export function collegeDelete(id) {
   })
 }
 
-export function collegeAdd(college_name, college_id) {
+export function collegeAdd(id,college_name) {
   return request({
     url: '/sadmin/college/add',
     method: 'post',
     data: {
-      college_name: college_name,
-      college_id: college_id
+      id: id,
+      college_name: college_name
     }
   })
 }

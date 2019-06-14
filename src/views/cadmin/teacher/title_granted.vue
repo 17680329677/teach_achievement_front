@@ -217,7 +217,7 @@
 
       //---------------------------基本信息操作---------------------------
       changeTeacherTitle: function(index){
-        var value = '空';
+        var value = ' ';
         this.teacherTitleOptions.forEach(item=>{
             if(item.id == index){
               value =  item.name

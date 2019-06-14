@@ -10,7 +10,14 @@ import store from "../../store";
     5.教研室教师信息【id+name+department_id】
     6.教材等级选项
 
+    7.教改项目等级 ProjectRank
+    8.教改项目类型 ProjectType
+    9.教改项目子类型 ProjectChildType
+    10.大创等级 InnovationRank
+    11. 班级信息选项
     12.班级信息
+
+    13.教师岗位类别
 */
 
 //1.挂载 学院选项信息
@@ -115,5 +122,16 @@ export function getDistributionOptins() {
     data:{
       token: store.getters.token
     }
+  })
+}
+
+
+
+
+//13.教师岗位类别
+export function getTeacherCategoryOptins() {
+  return request({
+    url: '/cadmin/teacher_category_options/get',
+    method: "post",
   })
 }

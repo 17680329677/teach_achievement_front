@@ -11,13 +11,13 @@
           <span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="260">
+      <el-table-column label="教师类型" width="260">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>id: {{ scope.row.id }}</p>
-            <p>等级名称: {{ scope.row.rank_name }}</p>
+            <p>教师类型: {{ scope.row.name }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.rank_name }}</el-tag>
+              <el-tag size="medium">{{ scope.row.name }}</el-tag>
             </div>
           </el-popover>
         </template>
@@ -32,8 +32,8 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="等级名称" :label-width="formLabelWidth" prop="rank_name">
-          <el-input v-model="editForm.rank_name" auto-complete="off"></el-input>
+        <el-form-item label="教师类型" :label-width="formLabelWidth" prop="rank_name">
+          <el-input v-model="editForm.name" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-    import {getBookRankInfo, updateBookRankInfo, addBookRankInfo, deleteBookRankInfo} from "../../../api/sadmin/rank/book";
+    import {teacherCategoryGet, teacherCategoryDelete, teacherCategoryAdd, teacherCategoryUpdate} from "@/api/sadmin/rank/teacherCategory";
     import {isEmpty} from '@/utils/validate';
 
     export default {
@@ -60,13 +60,13 @@
           dialogTitle: '',
           editForm: {
             id: '',
-            rank_name: ''
+            name: ''
           },
         }
       },
       methods: {
         getBookRankInfo: function () {
-          getBookRankInfo().then(res => {
+          teacherCategoryGet().then(res => {
             this.tableData = res.data;
           })
         },
@@ -83,7 +83,7 @@
         },
 
         update: function () {
-          updateBookRankInfo(this.editForm.id, this.editForm.rank_name).then(res => {
+          teacherCategoryUpdate(this.editForm.id, this.editForm.name).then(res => {
             if (res.status == 'success') {
               this.$message({
                 message: '更新成功！',
@@ -96,7 +96,7 @@
         },
 
         add: function () {
-          addBookRankInfo(this.editForm.rank_name).then(res => {
+          teacherCategoryAdd(this.editForm.name).then(res => {
             if (res.status == 'success'){
               this.$message({
                 message: '添加成功！',
@@ -115,7 +115,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            deleteBookRankInfo(this.editForm.id).then(res => {
+            teacherCategoryDelete(this.editForm.id).then(res => {
               if (res.status == 'success'){
                 this.$message({
                   message: '删除成功！',

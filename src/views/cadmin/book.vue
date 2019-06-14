@@ -39,7 +39,7 @@
       </el-table-column>
 
       <el-table-column label="教材名称" width="150">
-        <template slot-scope="scope">
+        <template slot-scope="scope" >
           <el-popover trigger="hover" placement="top">
             <p>名称: {{ scope.row.book_name }}</p>
             <p>ISBN: {{ scope.row.isbn }}</p>

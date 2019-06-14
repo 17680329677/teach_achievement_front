@@ -19,7 +19,9 @@
       <!--<el-input :placeholder="筛选"  style="width: 200px;" class="filter-item" />-->
       <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleAdd">添加教师</el-button>
       <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="" @click="export2Excel">导出数据</el-button>
+
       <br/><br/>
+
     </div>
 
     <el-table :data="tableData.slice((currentPage-1)*pageSize, currentPage*pageSize)" style="width: 100%" border>
@@ -30,35 +32,51 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="教师工号" width="200">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.number }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="教师姓名" width="200">
+      <el-table-column label="教师姓名" width="100">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="所属教研室" width="200">
+      <el-table-column label="教职工号" width="100">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.department_id }}</span>
+          <span style="margin-left: 10px">{{ scope.row.number }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="是否在编" width="100">
+      <el-table-column label="所属教研室" width="150">
         <template slot-scope="scope">
-          <span style="margin-left: 10px;color:#97a6ff" v-if="(scope.row.status == '1')">是</span>
-          <span style="margin-left: 10px;color:gray" v-if="(scope.row.status == '0')">否</span>
+          <span style="margin-left: 10px">{{ scope.row.department_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="双肩挑" width="100">
+      <el-table-column label="岗位类别" width="150">
         <template slot-scope="scope">
-          <span style="margin-left: 10px;color:goldenrod" v-if="(scope.row.type == '1')">是</span>
-          <span style="margin-left: 10px;color:green" v-if="(scope.row.type == '0')">否</span>
+          <span style="margin-left: 10px">{{ scope.row.teacher_category_name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="教学职称" width="150">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.teachertitle_name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="管理职称" width="150">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.managertitle_name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="双肩挑" width="80">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.type }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="状态" width="80">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.status }}</span>
         </template>
       </el-table-column>
 
@@ -99,7 +117,7 @@
       <el-form :model="editForm">
 
         <el-form-item label="教师工号" :label-width="formLabelWidth">
-          <el-input v-model="editForm.number" auto-complete="off" required="required"></el-input>
+          <el-input v-model="editForm.number" auto-complete="off" :disabled="dialogTitle == '编辑'" required="required"></el-input>
         </el-form-item>
 
         <el-form-item label="教师名称" :label-width="formLabelWidth">
@@ -107,11 +125,11 @@
         </el-form-item>
 
         <el-form-item label="性别" :label-width="formLabelWidth">
-          <el-input v-model="editForm.gender" auto-complete="off" required="required"></el-input>
+          <el-radio v-model="editForm.gender" label="男">男</el-radio>
+          <el-radio v-model="editForm.gender" label="女">女</el-radio>
         </el-form-item>
 
         <el-form-item label="民族" :label-width="formLabelWidth">
-
           <el-select v-model="editForm.nationality" placeholder="请选择" class="filter-item">
             <el-option
               v-for="item in nationalityOptions"
@@ -122,7 +140,6 @@
               {{item.name}}
             </el-option>
           </el-select>
-
         </el-form-item>
 
         <el-form-item label="出生年月日" :label-width="formLabelWidth">
@@ -150,7 +167,7 @@
         </el-form-item>
 
         <el-form-item label="所属教研室" :label-width="formLabelWidth" >
-          <el-select v-model="editForm.department_id" placeholder="请选择" class="filter-item" required="required">
+          <el-select v-model="editForm.department_id"  placeholder="请选择" class="filter-item" required="required">
             <el-option
               v-for="item in departmentOptions"
               :label="item.name"
@@ -162,12 +179,26 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item label="岗位类别" :label-width="formLabelWidth">
+          <el-select v-model="editForm.teacher_category_id" placeholder="请选择" class="filter-item" >
+            <el-option
+              v-for="item in teacherCategoryOptions"
+              :label="item.name"
+              :key="item.id"
+              :value="item.id"
+            >
+              {{item.name}}
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="双肩挑" :label-width="formLabelWidth">
-          <el-input v-model="editForm.type" auto-complete="off"></el-input>
+            <el-radio v-model="editForm.type" label="是">是</el-radio>
+            <el-radio v-model="editForm.type" label="否">否</el-radio>
         </el-form-item>
 
         <el-form-item label="教学职称" :label-width="formLabelWidth">
-          <el-select v-model="editForm.teachertitle_id" placeholder="请选择" class="filter-item" :disabled="true">
+          <el-select v-model="editForm.teachertitle_id" placeholder="请选择" class="filter-item" >
             <el-option
               v-for="item in teacherTitleOptions"
               :label="item.name"
@@ -177,11 +208,10 @@
               {{item.name}}
             </el-option>
           </el-select>
-
         </el-form-item>
 
         <el-form-item label="管理职称" :label-width="formLabelWidth">
-          <el-select v-model="editForm.managertitle_id" placeholder="请选择" class="filter-item" :disabled="true">
+          <el-select v-model="editForm.managertitle_id" placeholder="请选择" class="filter-item" >
             <el-option
               v-for="item in teacherTitleOptions"
               :label="item.name"
@@ -193,12 +223,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="教师类型" :label-width="formLabelWidth">
-          <el-input v-model="editForm.type_id" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-
         <el-form-item label="工作状态" :label-width="formLabelWidth">
-          <el-input v-model="editForm.status" auto-complete="off"></el-input>
+          <el-radio v-model="editForm.status" label="在职">在职</el-radio>
+          <el-radio v-model="editForm.status" label="非在职">非在职</el-radio>
+          <el-radio v-model="editForm.status" label="离岗">离岗</el-radio>
         </el-form-item>
 
         <el-form-item label="参加工作时间" :label-width="formLabelWidth">
@@ -224,7 +252,16 @@
         </el-form-item>
 
         <el-form-item label="最高学历" :label-width="formLabelWidth">
-          <el-input v-model="editForm.highest_education" auto-complete="off"></el-input>
+          <el-select v-model="editForm.highest_education" placeholder="请选择" class="filter-item">
+            <el-option
+              v-for="item in highestEducationOptions"
+              :label="item.name"
+              :key="item.name"
+              :value="item.name"
+            >
+              {{item.name}}
+            </el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="最高学历取时间" :label-width="formLabelWidth">
@@ -247,15 +284,15 @@
         </el-form-item>
 
         <el-form-item label="研究方向" :label-width="formLabelWidth">
-          <el-input v-model="editForm.research_direction" auto-complete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.research_direction" auto-complete="off" ></el-input>
         </el-form-item>
 
         <el-form-item label="联系方式" :label-width="formLabelWidth">
-          <el-input v-model="editForm.telephone" auto-complete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.telephone" auto-complete="off" ></el-input>
         </el-form-item>
 
         <el-form-item label="邮箱" :label-width="formLabelWidth">
-          <el-input v-model="editForm.email" auto-complete="off" :disabled="true"></el-input>
+          <el-input v-model="editForm.email" auto-complete="off" ></el-input>
         </el-form-item>
 
 
@@ -271,28 +308,84 @@
 
     <!-- 二级信息编辑框（） end -->
 
+    <!--  将excel文件里的数据导入到数据库 BEGIN  -->
+    <br><br><br>
+    <upload-excel-component :on-success="excelHandleSuccess" :before-upload="excelBeforeUpload" />
+    <div style="text-align: center; margin-top: 10px">
+      <el-button class="filter-item" style="text-align: center;" type="success" icon="" @click="excelDialogVisible = true">导入数据预览</el-button>
+    </div>
+    <el-dialog title="导入数据预览" :visible.sync="excelDialogVisible" width="90%">
+      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="" @click="excelUploadData">批量导入数据</el-button>
+      <p style="color: #F56C6C">上传数据时，请按照如下格式，表头汉字要相同。预览到的数据将被上传：</p>
+      <p>数据中，职称类型可以直接写字母+数字，如“副处级B2”可缩写为“B2”，可自动识别</p>
+      <p>如果下面没有数据，可关掉当前窗口，在表格下方选择excel文件以导入数据</p>
+      <table border="1px solid #ccc" cellspacing="0" cellpadding="0" >
+        <tr>
+          <td>教工号</td><td>姓名</td><td>性别</td><td>民族</td><td>出生年月</td><td>所在学院</td>
+          <td>所属教研室</td><td>教学岗位职称</td><td>管理岗位职称</td><td>教师类型</td><td>双肩挑</td>
+          <td>参加工作年月</td><td>入校年月</td><td>最高学历</td><td>最高学历获得年月</td><td>毕业论文题目</td>
+          <td>毕业学校</td><td>研究方向</td><td>电话</td><td>邮箱</td><td>教师状态</td>
+        </tr>
+        <tr>
+          <td style="color: #F56C6C">必填</td><td style="color: #F56C6C">必填</td><td style="color: #F56C6C">必填</td><td></td><td></td><td></td>
+          <td style="color: #F56C6C">必填</td><td></td><td></td><td style="color: #F56C6C">必填</td><td></td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td></td><td></td><td></td><td></td><td style="color: #F56C6C">必填</td>
+        </tr>
+      </table>
+
+      <!-- 上传进度：<el-progress :text-inside="true" :stroke-width="24" :percentage="excelUploadProcessed" status="success"></el-progress> -->
+
+      <p>共有：{{excelTableData.length}}条数据</p>
+      <p>上传成功：{{ excelUploadSuccessNumber }} 条数据</p>
+      <p>上传失败：{{ excelUploadErrNumber }} 条数据</p>
+      <el-table :data="excelTableData" border highlight-current-row style="width: 100%;margin-top:20px;">
+        <el-table-column v-for="item of excelTableHeader" :key="item" :prop="item" :label="item" />
+      </el-table>
+    </el-dialog>
+
+    <!--  将excel文件里的数据导入到数据库  END  -->
+
   </div>
 
 
 </template>
 
 <script>
+  import { parseTime } from '@/utils/index'
   import { getAllTeacherInfo,   //显示信息获得
     addTeacherInfo, delTeacherInfo,//基本信息操作
     updateTeacherInfo,  //子信息操作
   } from '@/api/cadmin/teacherInfo';
 
-  import { getCollegeOptions, getDepartmentOptions, getTeacherTitleOption,  //选项信息挂载
+  import { getCollegeOptions, getDepartmentOptions, getTeacherTitleOption,getTeacherCategoryOptins  //选项信息挂载
   } from '@/api/cadmin/optionInfo';
 
   import { Blob, Export2Excel } from "@/api/common/Export2Excel";
 
+  import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+
+
   export default {
     inject: ['reload'],
     name: "teacher_info",
+
+    components: { UploadExcelComponent }, //注册子组件
     //数据展示
     data() {
       return {
+
+        //------------ excel导入数据部分----------
+        excelTableData: [],
+        excelTableHeader: [],
+        excelDialogVisible:false,//excel dialog
+          //上传工作
+        excelUploadSuccessNumber: 0, //失败数量
+        excelUploadErrNumber: 0, //成功数量
+        excelUploadErrList : [],//上传出错的数据的列表
+        //excelUploadProcessed : 0,
+
+        //------------ excel导入数据部分----------
 
         //搜索
         options:[
@@ -309,7 +402,8 @@
         departmentOptions: [], //教研室选项
         collegeOptions: [], //学院选项
         teacherTitleOptions: [], //教师职称选项， 管理职称也是用这个
-        teacherTypeOptions: [], //教师账号类型 1、2、3、4、5
+        teacherTypeOptions: [], //弃用，基本没用了~  教师账号类型 1、2、3、4、5
+        teacherCategoryOptions:[],
         nationalityOptions: [
           { "name": "汉族" },{ "name": "壮族" },{ "name": "回族" },{ "name": "满族" },{ "name": "维吾尔族" },
           { "name": "苗族" },{ "name": "彝族" },{ "name": "土家族" },{ "name": "藏族" },{ "name": "蒙古族" },
@@ -324,6 +418,14 @@
           { "name": "鄂伦春族" },{ "name": "独龙族" },{ "name": "赫哲族" },{ "name": "高山族" },{ "name": "珞巴族" },
           { "name": "塔塔尔族" }
           ],//民族选项，方便老师填写，直接写成固定
+        highestEducationOptions:[
+          { "name": "博士后" },
+          { "name": "博士" },
+          { "name": "硕士" },
+          { "name": "研究生同等" },
+          { "name": "本科" },
+          { "name": "大专" }
+        ],
 
         //页号
         currentPage: 1,
@@ -335,6 +437,7 @@
         dialogTitle: '编辑',
         formLabelWidth: '120px',
 
+
         //提交的数据组
         editForm: {
           number: '',
@@ -343,8 +446,8 @@
           nationality: '',
           birth_year_month: '',
           college_id: '',
-          teachertitle_id: '',
-          managertitle_id: '',
+          teachertitle_id: '',  teachertitle_name: '',
+          managertitle_id: '',  managertitle_name: '',
           type: '',
           status: '',
           work_begin_year_month: '',
@@ -359,6 +462,12 @@
         },
 
       }
+    },
+    computed: {
+        excelUploadProcessed: function () {
+          return Math.floor( (this.excelUploadSuccessNumber/this.excelTableData.length)*100 )
+        }
+
     },
     //方法
     methods: {
@@ -407,8 +516,8 @@
       updateInfo: function() {
         updateTeacherInfo(
           this.editForm.number, this.editForm.name, this.editForm.gender, this.editForm.nationality,
-          this.editForm.birth_year_month, this.editForm.department_id,  this.editForm.college_id,
-          this.editForm.teachertitle_id, this.editForm.managertitle_id,
+          this.editForm.birth_year_month, this.editForm.department_id,  this.editForm.college_id, this.editForm.teachertitle_id, this.editForm.managertitle_id,
+          this.editForm.teacher_category_id,//新增加  教师类型
           this.editForm.type, this.editForm.status, this.editForm.work_begin_year_month, this.editForm.bjfu_join_year_month,
           this.editForm.highest_education, this.editForm.highest_education_accord_year_month, this.editForm.graduate_paper_title,
           this.editForm.graduate_school, this.editForm.research_direction, this.editForm.telephone, this.editForm.email
@@ -460,7 +569,8 @@
       addInfo: function () {
         addTeacherInfo(
           this.editForm.number, this.editForm.name, this.editForm.gender, this.editForm.nationality,
-          this.editForm.birth_year_month, this.editForm.college_id, this.editForm.teachertitle_id, this.editForm.managertitle_id,
+          this.editForm.birth_year_month, this.editForm.department_id,this.editForm.college_id, this.editForm.teachertitle_id, this.editForm.managertitle_id,
+          this.editForm.teacher_category_id,//新增加  教师类型
           this.editForm.type, this.editForm.status, this.editForm.work_begin_year_month, this.editForm.bjfu_join_year_month,
           this.editForm.highest_education, this.editForm.highest_education_accord_year_month, this.editForm.graduate_paper_title,
           this.editForm.graduate_school, this.editForm.research_direction, this.editForm.telephone, this.editForm.email
@@ -468,7 +578,7 @@
           if (res.status == 'success'){
             this.dialogFormVisible = false;
             this.$message({
-              message: '添加成功！',
+              message: res.reason,
               type: 'success'
             });
             this.reload();
@@ -494,33 +604,108 @@
 
 
 
+      //1.-----------------------------------excel导入-----------------------------------
+      //excel上传数据前检测
+      excelBeforeUpload(file) {
+        //初始化 之前的数据清空：
+        this.excelUploadSuccessNumber = 0;
+        this.excelUploadErrNumber = 0;
+        this.excelUploadErrList = [];  //上传出错的数据的列表
 
+        const isLt1M = file.size / 1024 / 1024 < 1;
 
-      //-----------------------------------导出excel-----------------------------------
+        if (isLt1M) {
+          this.excelDialogVisible = true;
+          return true;
+        }
+
+        this.$message({
+          message: '请不要上传大于1M的excel文件',
+          type: 'warning'
+        });
+        return false;
+      },
+      //数据读取成功后
+      excelHandleSuccess({ results, header }) {
+        this.excelTableData = results;
+        this.excelTableHeader = header;
+      },
+      //上传按钮
+      excelUploadData: function() {
+
+        //重复确认
+        this.$confirm('此操作将上传信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          /*
+          addTeacherInfo(
+            this.editForm.number, this.editForm.name, this.editForm.gender, this.editForm.nationality,
+            this.editForm.birth_year_month, this.editForm.department_id, this.editForm.college_id, this.editForm.teachertitle_id, this.editForm.managertitle_id,
+            this.editForm.teacher_category_id,//新增加  教师类型
+            this.editForm.type, this.editForm.status, this.editForm.work_begin_year_month, this.editForm.bjfu_join_year_month,
+            this.editForm.highest_education, this.editForm.highest_education_accord_year_month, this.editForm.graduate_paper_title,
+            this.editForm.graduate_school, this.editForm.research_direction, this.editForm.telephone, this.editForm.email
+          )*/
+          this.excelTableData.forEach(item=>{
+            //数据转换处理 START
+
+            //数据转换处理 END
+            addTeacherInfo(item["教工号"],  item["姓名"], item["性别"], item["民族"],
+              item["出生年月"], item["所在学院"], item["所属教研室"], item["教学岗位职称"], item["管理岗位职称"],
+              item["教师类型"],
+              item["双肩挑"], item["教师状态"], item["参加工作年月"], item["入校年月"],
+              item["最高学历"], item["最高学历获得年月"], item["毕业论文题目"],
+              item["毕业学校"], item["研究方向"], item["电话"], item["邮箱"],
+              ).then(res => {
+              if (res.status == 'success'){
+                this.excelUploadSuccessNumber += 1;
+              }else {
+                //var tmplist =
+                //errList =
+                this.excelUploadErrNumber += 1;
+
+              }
+            });
+
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
+
+          });
+      },
+      //-----------------------------------excel导入 End-----------------------------------
+
+      //2.-----------------------------------导出excel-----------------------------------
       export2Excel: function() {
         var tempTableData = this.tableData;
 
         //--------导出之前对数据格式化---------
         tempTableData.forEach(function(item,index){
-          if(item.status == '1' ){
-            item.status = '是';
-          } else if(item.status == '0'){
-            item.status = '否';
-          }
-
-          if(item.type == '1' ){
-            item.type = '是';
-          } else if(item.type == '0'){
-            item.type = '否';
-          }
+          item.birth_year_month = parseTime(item.birth_year_month,'{y}-{m}-{d}');
+          item.work_begin_year_month = parseTime(item.work_begin_year_month,'{y}-{m}-{d}');
+          item.bjfu_join_year_month = parseTime(item.bjfu_join_year_month,'{y}-{m}-{d}');
+          item.highest_education_accord_year_month = parseTime(item.highest_education_accord_year_month,'{y}-{m}-{d}');
         });
         //-----------格式化End---------------
 
         require.ensure([], () => {
           const { export_json_to_excel } = require('@/api/common/Export2Excel');
-          const tHeader = ['工号', '姓名', '所属教研室','是否在编','双肩挑'];
+          const tHeader = ['教工号', '姓名', '性别','民族','出生年月',
+            '所在学院','所属教研室','教学岗位职称','管理岗位职称',
+            '教师类型','双肩挑','参加工作年月','入校年月','最高学历',
+            '最高学历获得年月','毕业论文题目','毕业学校','研究方向',
+            '电话','邮箱','教师状态'];
           // 上面设置Excel的表格第一行的标题
-          const filterVal = ['number', 'number','number','status','type'];
+          const filterVal = ['number', 'name','gender','nationality','birth_year_month',
+          'college_name','department_name','teachertitle_name','managertitle_name',
+          'teacher_category_name','type','work_begin_year_month','bjfu_join_year_month','highest_education',
+          'highest_education_accord_year_month','graduate_paper_title','graduate_school','research_direction',
+          'telephone','email','status'];
           // 上面的index、phone_Num、school_Name是tableData里对象的属性
           const list = tempTableData;  //把data里的tableData存到list
           const data = this.exportDataFormatJson(filterVal, list);
@@ -531,13 +716,13 @@
       exportDataFormatJson: function(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))
       }
-      //-------------------------------------导出 End-------------------------------------
+      //-------------------------------------导出excel End-------------------------------------
 
     },
 
     mounted: function () {
       //debug
-      window.vue = this
+      window.vue = this;
 
       //挂载页面中Table的数据
       getAllTeacherInfo().then(res => {
@@ -567,6 +752,10 @@
         this.teacherTitleOptions = res.data;
       });
 
+      //挂载教师岗位类别
+      getTeacherCategoryOptins().then(res =>{
+        this.teacherCategoryOptions = res.data;
+      });
     }
 
   }

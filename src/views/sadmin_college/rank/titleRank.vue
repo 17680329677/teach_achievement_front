@@ -5,28 +5,24 @@
       <br/><br/>
     </div>
 
-    <el-table :data="tableData" style="width: 80%; margin: 0 auto;" border>
+    <el-table :data="tableData.slice((currentPage-1)*pageSize, currentPage*pageSize)" style="width: 80%; margin: 0 auto;" border>
       <el-table-column label="序号" width="100">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="职称名称" width="300">
+      <el-table-column label="所属系列" width="200">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>id: {{ scope.row.id }}</p>
-            <p>教师所属系列id: {{ scope.row.type_id }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
+          <span style="margin-left: 10px">{{ scope.row.teacher_category_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="教师类型" width="200">
+
+      <el-table-column label="教师职称" width="200">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.type_name }}</span>
+          <span style="margin-left: 10px">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
+
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -35,32 +31,38 @@
       </el-table-column>
     </el-table>
 
+    <div class="filter-container">
+      <el-pagination
+        style="margin-left: 10px; text-align: center; float: right; margin-top: 15px"
+        background
+        layout="prev, pager, next"
+        :total=this.tableData.length
+        :page-size="9"
+        @current-change="handleCurrentChange"
+        @size_change="">
+      </el-pagination>
+    </div>
+
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
+
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="职称名称" :label-width="formLabelWidth" prop="name">
+        <el-form-item label="职称类型" :label-width="formLabelWidth" prop="name">
           <el-input v-model="editForm.name" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
 
       <el-form :model="editForm" ref="editForm">
-        <el-form-item label="所属教师类型"  :label-width="formLabelWidth">
-          <el-select v-model="editForm.type_id" placeholder="请选择" class="filter-item">
+        <el-form-item label="所属系列"  :label-width="formLabelWidth">
+          <el-select v-model="editForm.teacher_category_id" placeholder="请选择" class="filter-item">
             <el-option
-              v-for="item in teacherTypeOptions"
+              v-for="item in teacherCategoryOptions"
               :key="item.id"
-              :label="item.type_name"
+              :label="item.name"
               :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-
-      <el-form :model="editForm" ref="editForm">
-        <el-form-item label="教师所属系列id:" :label-width="formLabelWidth" prop="type_id">
-          {{editForm.type_id}}
-        </el-form-item>
-      </el-form>
-
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -73,7 +75,7 @@
 
 <script>
   import {teacherTitleGet, teacherTitleAdd, teacherTitleDelete, teacherTitleUpdate} from "@/api/sadmin/rank/teacherTitle";
-  import {teacherTypeGet} from "@/api/sadmin/rank/teacherType";
+  import { teacherCategoryGet } from "@/api/sadmin/rank/teacherCategory";
   import {isEmpty} from '@/utils/validate';
 
   export default {
@@ -81,27 +83,26 @@
     name: "titlerank",
     data() {
       return {
+        currentPage: 1,
+        pageSize: 9,
+
         tableData: [], //用来存放教师职称信息  [显示]
-        teacherTypeOptions: [],  //用来存放教师用户类型的选项  [显示]
+        teacherCategoryOptions: [],  //用来存放教师用户类型的选项  [显示]
         dialogFormVisible: false,
         formLabelWidth: '120px',
         dialogTitle: '',
         editForm: {
           id: '',
           name: '',     //教师职称id
-          type_id: '',  //教师类型id
-          type_name: '' //教师类型
+          teacher_category_id: '',  //教师类型id
+          teacher_category_name: '' //教师类型
         },
       }
     },
     methods: {
-      getTeacherTitleInfo: function () {
-        teacherTitleGet().then(res => {
-          this.tableData = res.data;
-        }),
-        teacherTypeGet().then(res => {
-          this.teacherTypeOptions = res.data;
-        })
+
+      handleCurrentChange(cpage){
+        this.currentPage = cpage;
       },
 
       handleEdit: function (index, row) {
@@ -111,6 +112,12 @@
       },
 
       handleAdd: function() {
+        this.editForm = {
+          id: '',
+          name: '',     //教师职称id
+          teacher_category_id: '',  //教师类型id
+          teacher_category_name: '' //教师类型
+        },
         this.dialogTitle = '添加';
         this.dialogFormVisible = true;
       },
@@ -119,7 +126,7 @@
         teacherTitleUpdate(this.editForm.id, this.editForm.name,this.editForm.type_id).then(res => {
           if (res.status == 'success') {
             this.$message({
-              message: '更新成功！',
+              message: res.reason,
               type: 'success'
             });
             this.dialogFormVisible = false;
@@ -129,10 +136,10 @@
       },
 
       add: function () {
-        teacherTitleAdd(this.editForm.name,this.editForm.type_id).then(res => {
+        teacherTitleAdd(this.editForm.name,this.editForm.teacher_category_id).then(res => {
           if (res.status == 'success'){
             this.$message({
-              message: '添加成功！',
+              message: res.reason,
               type: 'success'
             });
             this.dialogFormVisible = false;
@@ -151,7 +158,7 @@
           teacherTitleDelete(this.editForm.id).then(res => {
             if (res.status == 'success'){
               this.$message({
-                message: '删除成功！',
+                message: res.reason,
                 type: 'success'
               });
               this.reload();
@@ -175,7 +182,20 @@
 
     },
     mounted: function () {
-      this.getTeacherTitleInfo();
+
+      teacherTitleGet().then(res => {
+        if (res.status == 'success'){
+          this.tableData = res.data;
+        }
+      });
+
+      teacherCategoryGet().then(res => {
+        if (res.status == 'success'){
+          this.teacherCategoryOptions = res.data;
+        }
+      });
+
+
     }
   }
 </script>

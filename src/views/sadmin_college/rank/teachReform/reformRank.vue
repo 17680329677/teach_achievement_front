@@ -11,7 +11,7 @@
           <span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="教改项目级别名称" width="400">
+      <el-table-column label="教改项目级别名称" width="260">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>id: {{ scope.row.id }}</p>

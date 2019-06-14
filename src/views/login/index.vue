@@ -1,12 +1,13 @@
 <template>
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left" size="medium">
-      <h2 class="title">北  京  林  业  大  学</h2>
-      <h3 class="title">教学成果及教务信息统计系统</h3>
+      <!--  <h2 class="title">北  京  林  业  大  学</h2>
+      <h3 class="title">教学成果及教务信息统计系统</h3>  -->
+      <h3 class="title">院 级 教 学 成 果 管 理 系 统</h3>
 
       <el-form-item label="登录类型" prop="type">
         <el-radio-group v-model="loginForm.type">
-          <el-radio label="teacher">教师登录</el-radio>
+          <el-radio label="teacher">管理员或教师登录</el-radio>
           <el-radio label="student">学生登录</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -40,7 +41,7 @@
         </el-button>
       </el-form-item>
       <div class="tips">
-        <span style="margin-right:20px;">username: 教师（7180278、7180288、7180266）、学生（15008023）</span>
+        <span style="margin-right:20px;">username: 教师（root、xxxy-admin、670103）、学生（7180278）</span>
         <span> password: admin</span>
       </div>
     </el-form>
@@ -73,7 +74,7 @@ export default {
     //数据处理
     return {
       loginForm: {
-        username: '7180288',
+        username: '',
         password: '123456',
         type: 'teacher'
       },
