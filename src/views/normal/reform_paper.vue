@@ -27,7 +27,7 @@
         </el-option>
       </el-select>
 
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleCreate">添加教材</el-button>
+      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleCreate">添加论文</el-button>
       <br/><br/>
     </div>
 
@@ -95,10 +95,10 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" size="small" label-width="80px">
-        <el-form-item label="教材名称">
+        <el-form-item label="论文名称">
           <el-input v-model="editForm.paper_name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="教材编号" >
+        <el-form-item label="论文编号" >
           <el-input v-model="editForm.paper_number" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="所属教师" >

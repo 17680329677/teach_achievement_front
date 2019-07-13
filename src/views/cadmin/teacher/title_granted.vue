@@ -143,6 +143,10 @@
 
     <!-- 二级信息编辑框（） end -->
 
+
+    <!-- 信息导入 -->
+    <upload-excel :columnConfig="ExcelColumnConfig" :uploadUrl="ExcelUploadUrl"/>
+
   </div>
 
 
@@ -155,14 +159,31 @@
 
   import {dateFormat} from "@/utils";
 
+  import UploadExcel from '@/views/components/Excel/UploadExcel' //二次封装组件
+
   export default {
     inject: ['reload'],
     name: "title_granted",
+
+    components: {
+      UploadExcel
+    }, //注册子组件
     //数据展示
     data() {
       return {
         //加载显示数据组
         tableData: [],  //首次加载 主页表格中要显示的数据
+
+        //导入
+        ExcelColumnConfig:[
+          {name:"number"  , value:"姓名"   },
+          {name:"department_id"  , value:"教研室"   },
+          {name:"title_type"  , value:"职称"   },
+          {name:"date_time" , value:"任职变更时间"  },
+        ],
+        ExcelUploadUrl: "",
+
+
 
         //选项信息
         teacherTitleOptions: [], //教师职称选项， 管理职称也是用这个

@@ -204,6 +204,9 @@
       </div>
     </el-dialog>
 
+    <!-- 信息导入 -->
+    <upload-excel :columnConfig="ExcelColumnConfig" :uploadUrl="ExcelUploadUrl"/>
+
   </div>
 </template>
 
@@ -214,9 +217,14 @@
   import {getBookRankOptins} from "@/api/cadmin/optionInfo";
   import {dateFormat} from "@/utils";
 
+  import UploadExcel from '@/views/components/Excel/UploadExcel' //二次封装组件
+
   export default {
     inject: ['reload'],
     name: "teach_reform",
+    components: {
+      UploadExcel
+    }, //注册子组件
     data() {
       return {
         options: [
@@ -233,6 +241,34 @@
           {value: '5', label: '结题'},
           {value: '6', label: '存档'},
         ],
+
+        //导入
+        ExcelColumnConfig:[
+          {name:"project_name"  , value:"项目名称" },
+          {name:"teacher_name"  , value:"教师姓名"  },
+          {name:"participate_type"  , value:"参与类型"  },
+          {name:"project_number"  , value:"项目编号"  },
+          {name:"type_child_id"  , value:"项目子类型"  },
+          {name:"child_type_name"  , value:"项目子类型"  },
+          {name:"rank_id"  , value:"项目所属级别"  },
+          {name:"rank_name"  , value:"项目所属级别"  },
+
+          {name:"begin_year_month" , value:"项目立项时间" },
+          {name:"mid_check_year_month" , value:"中期检查时间" },
+          {name:"end_year_month" , value:"项目结项时间" },
+          {name:"mid_check_rank"  , value:"中期检查等级"  },
+          {name:"end_check_rank"  , value:"结项等级"  },
+          {name:"subject"  , value:"所属一级学科"  },
+          {name:"status"  , value:"状态"  },
+          {name:"host_student"  , value:"主持人"  },
+          {name:"participate_student"  , value:"项目组其他成员"  },
+          {name:"remark"  , value:"备注信息"  },
+          {name:"grade"  , value:"项目最终成绩"  },
+          {name:"submit_time" , value:"提交时间" },
+
+        ],
+        ExcelUploadUrl: "",
+
 
         //搜索
         searchType: '',

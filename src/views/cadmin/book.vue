@@ -143,7 +143,7 @@
           <el-select v-model="editForm.rank_id" placeholder="请选择" class="filter-item">
             <el-option
               v-for="item in bookRankOptins"
-              :label="item.rank_name + ' ( ' + item.id + ' ) ' "
+              :label="item.rank_name"
               :key="item.id"
               :value="item.id"
             >

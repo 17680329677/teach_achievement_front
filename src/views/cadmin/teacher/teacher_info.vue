@@ -56,9 +56,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="教学职称" width="150">
+      <el-table-column label="教学职称" width="250">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.teachertitle_name }}</span>
+          <span style="margin-left: 10px">{{ scope.row.teachertitle_name }}</span><br>
+          <span style="margin-left: 10px">讲师认定时间：</span><br>
+          <span style="margin-left: 10px">副教授认定时间：</span><br>
+          <span style="margin-left: 10px">教授认定时间：2003-07-01</span><br>
         </template>
       </el-table-column>
 
@@ -79,6 +82,7 @@
           <span style="margin-left: 10px">{{ scope.row.status }}</span>
         </template>
       </el-table-column>
+
 
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -304,47 +308,8 @@
     </el-dialog>
     <!-- 基本信息编辑框 end -->
 
-    <!-- 二级信息编辑框（） begin -->
-
-    <!-- 二级信息编辑框（） end -->
-
-    <!--  将excel文件里的数据导入到数据库 BEGIN  -->
-    <br><br><br>
-    <upload-excel-component :on-success="excelHandleSuccess" :before-upload="excelBeforeUpload" />
-    <div style="text-align: center; margin-top: 10px">
-      <el-button class="filter-item" style="text-align: center;" type="success" icon="" @click="excelDialogVisible = true">导入数据预览</el-button>
-    </div>
-    <el-dialog title="导入数据预览" :visible.sync="excelDialogVisible" width="90%">
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="success" icon="" @click="excelUploadData">批量导入数据</el-button>
-      <p style="color: #F56C6C">上传数据时，请按照如下格式，表头汉字要相同。预览到的数据将被上传：</p>
-      <p>数据中，职称类型可以直接写字母+数字，如“副处级B2”可缩写为“B2”，可自动识别</p>
-      <p>如果下面没有数据，可关掉当前窗口，在表格下方选择excel文件以导入数据</p>
-      <table border="1px solid #ccc" cellspacing="0" cellpadding="0" >
-        <tr>
-          <td>教工号</td><td>姓名</td><td>性别</td><td>民族</td><td>出生年月</td><td>所在学院</td>
-          <td>所属教研室</td><td>教学岗位职称</td><td>管理岗位职称</td><td>教师类型</td><td>双肩挑</td>
-          <td>参加工作年月</td><td>入校年月</td><td>最高学历</td><td>最高学历获得年月</td><td>毕业论文题目</td>
-          <td>毕业学校</td><td>研究方向</td><td>电话</td><td>邮箱</td><td>教师状态</td>
-        </tr>
-        <tr>
-          <td style="color: #F56C6C">必填</td><td style="color: #F56C6C">必填</td><td style="color: #F56C6C">必填</td><td></td><td></td><td></td>
-          <td style="color: #F56C6C">必填</td><td></td><td></td><td style="color: #F56C6C">必填</td><td></td>
-          <td></td><td></td><td></td><td></td><td></td>
-          <td></td><td></td><td></td><td></td><td style="color: #F56C6C">必填</td>
-        </tr>
-      </table>
-
-      <!-- 上传进度：<el-progress :text-inside="true" :stroke-width="24" :percentage="excelUploadProcessed" status="success"></el-progress> -->
-
-      <p>共有：{{excelTableData.length}}条数据</p>
-      <p>上传成功：{{ excelUploadSuccessNumber }} 条数据</p>
-      <p>上传失败：{{ excelUploadErrNumber }} 条数据</p>
-      <el-table :data="excelTableData" border highlight-current-row style="width: 100%;margin-top:20px;">
-        <el-table-column v-for="item of excelTableHeader" :key="item" :prop="item" :label="item" />
-      </el-table>
-    </el-dialog>
-
-    <!--  将excel文件里的数据导入到数据库  END  -->
+    <!-- 信息导入 -->
+    <upload-excel :columnConfig="ExcelColumnConfig" :uploadUrl="ExcelUploadUrl"/>
 
   </div>
 
@@ -358,19 +323,26 @@
     updateTeacherInfo,  //子信息操作
   } from '@/api/cadmin/teacherInfo';
 
+  import { nationalityOptions, highestEducationOptions } from './marcos'
+
   import { getCollegeOptions, getDepartmentOptions, getTeacherTitleOption,getTeacherCategoryOptins  //选项信息挂载
   } from '@/api/cadmin/optionInfo';
 
-  import { Blob, Export2Excel } from "@/api/common/Export2Excel";
+  import { Export2Excel } from "@/vendor/Export2Excel";//导出数据
 
-  import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+
+  import UploadExcel from '@/views/components/Excel/UploadExcel' //二次封装组件
 
 
   export default {
     inject: ['reload'],
     name: "teacher_info",
 
-    components: { UploadExcelComponent }, //注册子组件
+    components: {
+      UploadExcel
+    }, //注册子组件
+
+
     //数据展示
     data() {
       return {
@@ -383,7 +355,34 @@
         excelUploadSuccessNumber: 0, //失败数量
         excelUploadErrNumber: 0, //成功数量
         excelUploadErrList : [],//上传出错的数据的列表
-        //excelUploadProcessed : 0,
+
+
+        ExcelColumnConfig:[
+          { name:"number", value:"教工号" },
+          { name:"name", value:"姓名" },
+          { name:"gender", value:"性别" },
+          { name:"nationality", value:"民族" },
+          { name:"birth_year_month", value:"出生年月" },
+          { name:"college_id", value:"所在学院" },
+          { name:"department_id", value:"所属教研室" },
+          { name:"teachertitle_id", value:"教学岗位职称" },
+          { name:"managertitle_id", value:"管理岗位职称" },
+
+          { name:"teacher_category_id", value:"教师类型" },
+
+          { name:"type", value:"双肩挑" },
+          { name:"status", value:"教师状态" },
+          { name:"work_begin_year_month", value:"参加工作年月" },
+          { name:"bjfu_join_year_month", value:"入校年月" },
+          { name:"highest_education", value:"最高学历" },
+          { name:"highest_education_accord_year_month", value:"最高学历获得年月" },
+          { name:"graduate_paper_title", value:"毕业论文题目" },
+          { name:"graduate_school", value:"毕业学校" },
+          { name:"research_direction", value:"研究方向" },
+          { name:"telephone", value:"电话" },
+          { name:"email", value:"邮箱" },
+        ],
+        ExcelUploadUrl: "/cadmin/teacher_info/add",
 
         //------------ excel导入数据部分----------
 
@@ -404,28 +403,8 @@
         teacherTitleOptions: [], //教师职称选项， 管理职称也是用这个
         teacherTypeOptions: [], //弃用，基本没用了~  教师账号类型 1、2、3、4、5
         teacherCategoryOptions:[],
-        nationalityOptions: [
-          { "name": "汉族" },{ "name": "壮族" },{ "name": "回族" },{ "name": "满族" },{ "name": "维吾尔族" },
-          { "name": "苗族" },{ "name": "彝族" },{ "name": "土家族" },{ "name": "藏族" },{ "name": "蒙古族" },
-          { "name": "侗族" },{ "name": "布依族" },{ "name": "瑶族" },{ "name": "白族" },{ "name": "朝鲜族" },
-          { "name": "哈尼族" },{ "name": "黎族" },{ "name": "哈萨克族" },{ "name": "傣族" },{ "name": "畲族7" },
-          { "name": "傈僳族" },{ "name": "东乡族" },{ "name": "仡佬族" },{ "name": "拉祜族" },{ "name": "佤族" },
-          { "name": "水族" },{ "name": "纳西族" },{ "name": "羌族" },{ "name": "土族" },{ "name": "仫佬族" },
-          { "name": "锡伯族" },{ "name": "柯尔克孜族" },{ "name": "景颇族" },{ "name": "达斡尔族" },{ "name": "撒拉族" },
-          { "name": "布朗族" },{ "name": "毛南族" },{ "name": "塔吉克族" },{ "name": "普米族" },{ "name": "阿昌族" },
-          { "name": "怒族" },{ "name": "鄂温克族" },{ "name": "京族" },{ "name": "基诺族" },{ "name": "德昂族" },
-          { "name": "保安族" },{ "name": "俄罗斯族" },{ "name": "裕固族" },{ "name": "乌孜别克族" },{ "name": "门巴族" },
-          { "name": "鄂伦春族" },{ "name": "独龙族" },{ "name": "赫哲族" },{ "name": "高山族" },{ "name": "珞巴族" },
-          { "name": "塔塔尔族" }
-          ],//民族选项，方便老师填写，直接写成固定
-        highestEducationOptions:[
-          { "name": "博士后" },
-          { "name": "博士" },
-          { "name": "硕士" },
-          { "name": "研究生同等" },
-          { "name": "本科" },
-          { "name": "大专" }
-        ],
+        nationalityOptions: nationalityOptions,//民族选项，方便老师填写，直接写成固定
+        highestEducationOptions: highestEducationOptions,
 
         //页号
         currentPage: 1,
@@ -462,12 +441,6 @@
         },
 
       }
-    },
-    computed: {
-        excelUploadProcessed: function () {
-          return Math.floor( (this.excelUploadSuccessNumber/this.excelTableData.length)*100 )
-        }
-
     },
     //方法
     methods: {
@@ -603,98 +576,23 @@
       //---------------------------详细信息操作---------------------------
 
 
-
-      //1.-----------------------------------excel导入-----------------------------------
-      //excel上传数据前检测
-      excelBeforeUpload(file) {
-        //初始化 之前的数据清空：
-        this.excelUploadSuccessNumber = 0;
-        this.excelUploadErrNumber = 0;
-        this.excelUploadErrList = [];  //上传出错的数据的列表
-
-        const isLt1M = file.size / 1024 / 1024 < 1;
-
-        if (isLt1M) {
-          this.excelDialogVisible = true;
-          return true;
-        }
-
-        this.$message({
-          message: '请不要上传大于1M的excel文件',
-          type: 'warning'
-        });
-        return false;
-      },
-      //数据读取成功后
-      excelHandleSuccess({ results, header }) {
-        this.excelTableData = results;
-        this.excelTableHeader = header;
-      },
-      //上传按钮
-      excelUploadData: function() {
-
-        //重复确认
-        this.$confirm('此操作将上传信息, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          /*
-          addTeacherInfo(
-            this.editForm.number, this.editForm.name, this.editForm.gender, this.editForm.nationality,
-            this.editForm.birth_year_month, this.editForm.department_id, this.editForm.college_id, this.editForm.teachertitle_id, this.editForm.managertitle_id,
-            this.editForm.teacher_category_id,//新增加  教师类型
-            this.editForm.type, this.editForm.status, this.editForm.work_begin_year_month, this.editForm.bjfu_join_year_month,
-            this.editForm.highest_education, this.editForm.highest_education_accord_year_month, this.editForm.graduate_paper_title,
-            this.editForm.graduate_school, this.editForm.research_direction, this.editForm.telephone, this.editForm.email
-          )*/
-          this.excelTableData.forEach(item=>{
-            //数据转换处理 START
-
-            //数据转换处理 END
-            addTeacherInfo(item["教工号"],  item["姓名"], item["性别"], item["民族"],
-              item["出生年月"], item["所在学院"], item["所属教研室"], item["教学岗位职称"], item["管理岗位职称"],
-              item["教师类型"],
-              item["双肩挑"], item["教师状态"], item["参加工作年月"], item["入校年月"],
-              item["最高学历"], item["最高学历获得年月"], item["毕业论文题目"],
-              item["毕业学校"], item["研究方向"], item["电话"], item["邮箱"],
-              ).then(res => {
-              if (res.status == 'success'){
-                this.excelUploadSuccessNumber += 1;
-              }else {
-                //var tmplist =
-                //errList =
-                this.excelUploadErrNumber += 1;
-
-              }
-            });
-
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
-          });
-
-          });
-      },
-      //-----------------------------------excel导入 End-----------------------------------
-
       //2.-----------------------------------导出excel-----------------------------------
       export2Excel: function() {
         var tempTableData = this.tableData;
 
         //--------导出之前对数据格式化---------
+        /*
         tempTableData.forEach(function(item,index){
           item.birth_year_month = parseTime(item.birth_year_month,'{y}-{m}-{d}');
           item.work_begin_year_month = parseTime(item.work_begin_year_month,'{y}-{m}-{d}');
           item.bjfu_join_year_month = parseTime(item.bjfu_join_year_month,'{y}-{m}-{d}');
           item.highest_education_accord_year_month = parseTime(item.highest_education_accord_year_month,'{y}-{m}-{d}');
         });
+        */
         //-----------格式化End---------------
 
         require.ensure([], () => {
-          const { export_json_to_excel } = require('@/api/common/Export2Excel');
+          const { export_json_to_excel } = require('@/vendor/Export2Excel');
           const tHeader = ['教工号', '姓名', '性别','民族','出生年月',
             '所在学院','所属教研室','教学岗位职称','管理岗位职称',
             '教师类型','双肩挑','参加工作年月','入校年月','最高学历',
@@ -723,6 +621,7 @@
     mounted: function () {
       //debug
       window.vue = this;
+
 
       //挂载页面中Table的数据
       getAllTeacherInfo().then(res => {

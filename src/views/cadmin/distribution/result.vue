@@ -91,7 +91,7 @@
 <script>
   import { getDistributionResult, searchDistributionResult, searchStatusDistributionResult } from "@/api/cadmin/distributionResult";
 
-  import { Blob, Export2Excel } from "@/api/common/Export2Excel";
+  import { Export2Excel } from "@/vendor/Export2Excel";
 
   import {dateFormat} from "@/utils";
 
@@ -174,7 +174,7 @@
         //-------------------------------格式化End--------------------------------
 
         require.ensure([], () => {
-          const { export_json_to_excel } = require('@/api/common/Export2Excel');
+          const { export_json_to_excel } = require('@/vendor/Export2Excel');
           const tHeader = ['学号', '姓名', '分流方向/专业','是否确认'];
           // 上面设置Excel的表格第一行的标题
           const filterVal = ['student_id', 'student_name','orientation_name','status'];

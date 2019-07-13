@@ -27,7 +27,7 @@
         </el-option>
       </el-select>
 
-      <el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleCreate">添加教材</el-button>
+      <!--<el-button class="filter-item" style="margin-left: 10px; text-align: center; float: right" type="primary" icon="el-icon-edit" @click="handleCreate">添加教材</el-button>-->
       <br/><br/>
     </div>
 

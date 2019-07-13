@@ -95,10 +95,10 @@
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form :model="editForm" size="small" label-width="80px">
-        <el-form-item label="教材名称">
+        <el-form-item label="论文名称">
           <el-input v-model="editForm.paper_name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="教材编号" >
+        <el-form-item label="论文编号" >
           <el-input v-model="editForm.paper_number" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="所属教师" >
@@ -200,6 +200,9 @@
       </div>
     </el-dialog>
 
+    <!-- 信息导入 -->
+    <!--<upload-excel :columnConfig="ExcelColumnConfig" :uploadUrl="ExcelUploadUrl"/>-->
+
   </div>
 </template>
 
@@ -209,9 +212,14 @@
 
   import {dateFormat} from "@/utils";
 
+  import UploadExcel from '@/views/components/Excel/UploadExcel' //二次封装组件
+
   export default {
     inject: ['reload'],
     name: "reform_paper",
+    components: {
+      UploadExcel
+    }, //注册子组件
     data() {
       return {
         options: [
@@ -225,6 +233,28 @@
           {value: '2', label: '待审核'},
           {value: '3', label: '已审核'},
         ],
+
+        //导入
+        ExcelColumnConfig:[
+          {name:"paper_name"   ,value:"论文名称" },
+          {name:"paper_number"   ,value:"论文编号" },
+          {name:"teacher_name"   ,value:"所属教师" },
+          {name:"teacher_number"   ,value:"所属教师工号" },
+          {name:"order"   ,value:"第几作者" },
+          {name:"journal_name"   ,value:"期刊名称" },
+          {name:"publish_year_month"  ,value:"论文发表日期" },
+          {name:"journal_year"   ,value:"期刊年号" },
+          {name:"journal_number"   ,value:"期刊期号" },
+          {name:"journal_volum"   ,value:"期刊卷号" },
+          {name:"status"   ,value:"状态" },
+          {name:"source_project"   ,value:"来源项目" },
+          {name:"cover_path"  ,value:"封面图片"  },
+          {name:"content_path"  ,value:"内容图片"  },
+          {name:"text_path"   ,value:"论文路径" },
+          {name:"cnki_url"   ,value:"中国知网链接" },
+          {name:"participate_teacher"   ,value:"参与人员" },
+        ],
+        ExcelUploadUrl: "",
 
         //搜索
         searchType: '',

@@ -39,7 +39,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="教改论文名称" width="150">
+      <el-table-column label="大创项目名称" width="150">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>名称: {{ scope.row.project_name }}</p>
@@ -163,10 +163,10 @@
         <el-form-item label="状态" >
           <el-input v-model="editForm.status" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="主持学生" >
+        <el-form-item label="主持人" >
           <el-input v-model="editForm.host_student" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="参与学生" >
+        <el-form-item label="项目组其他成员" >
           <el-input v-model="editForm.participant_student" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="备注" >
@@ -182,6 +182,10 @@
       </div>
     </el-dialog>
 
+
+    <!-- 信息导入 -->
+    <upload-excel :columnConfig="ExcelColumnConfig" :uploadUrl="ExcelUploadUrl"/>
+
   </div>
 </template>
 
@@ -189,11 +193,16 @@
   import { getInnovationInfo, getDetailInnovationInfo, statusSearchInnovation, searchInnovationInfo,
     changeInnovationStatus, changeSubmitInfo } from "@/api/cadmin/innovation";
 
+  import UploadExcel from '@/views/components/Excel/UploadExcel' //二次封装组件
+
   import {dateFormat} from "@/utils";
 
   export default {
     inject: ['reload'],
     name: "innovation",
+    components: {
+      UploadExcel
+    }, //注册子组件
     data() {
       return {
         options: [
@@ -207,6 +216,29 @@
           {value: '2', label: '待审核'},
           {value: '3', label: '已审核'},
         ],
+
+        ExcelColumnConfig:[
+          {name:"project_name",value:"项目名称"},
+          {name:"project_number",value:"项目编号" },
+          {name:"teacher_name",value:"所属教师" },
+          {name:"teacher_number",value:"所属教师工号" },
+          {name:"college_name",value:"所属学院" },
+          {name:"begin_year_month",value:"项目立项年月" },
+
+          {name:"mid_check_year_month",value:"中期检查年月" },
+          {name:"end_year_month",value:"结项成绩" },
+
+          {name:"mid_check_rank",value:"中期检查等级" },
+          {name:"end_check_rank",value:"结项成绩" },
+          {name:"subject",value:"所属一级学科" },
+          {name:"status",value:"状态" },
+          {name:"host_student",value:"主持人" },
+          {name:"participant_student",value:"项目组其他成员" },
+          {name:"remark",value:"备注" },
+          {name:"submit_time",value:"提交时间" },
+        ],
+        ExcelUploadUrl: "",
+
 
         //搜索
         searchType: '',

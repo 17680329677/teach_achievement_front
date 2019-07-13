@@ -23,7 +23,8 @@
 
       <el-table-column label="教研室主任" width="200">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{changeTeacherNumberToName(scope.row.director)}}  ({{ scope.row.director }})</span>
+          <span style="margin-left: 10px">{{changeTeacherNumberToName(scope.row.director)}}  </span>
+          <!--({{ scope.row.director }})-->
         </template>
       </el-table-column>
 
