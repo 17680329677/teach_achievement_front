@@ -243,7 +243,7 @@
       <img
         :src="imgFormUrl"
         style="width: 100%"
-      ></img>
+      >
       <div slot="footer" class="dialog-footer">
         <el-button @click="imgFormVisible = false,imgFormUrl = '' ">返 回</el-button>
       </div>

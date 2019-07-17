@@ -32,19 +32,35 @@ export const constantRouterMap = [
   { path: '/404', component: () => import('@/views/error-page/404'), hidden: true },
   { path: '/401', component: () => import('@/views/error-page/401'), hidden: true },
 
+  {
+    path: '/_test',
+    component: Layout,
+    redirect: '/_test/test',
+    name: '_test',
+    meta: { title: '测试', icon: 'dashboard' },
+    children: [{
+      path: 'test',
+      component: () => import('@/views/test/test'),
+      meta: { title: '测试', icon: 'dashboard' }
+    }]
+  },
 
 ]
 
 export const tempAsyncRouterMap = [   //配置路由，这里是个数组
 
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/404', hidden: true },
 
 ]
 
 /*
 asyncRouterMap 在 @/store/modules/permission中被调用，将多个动态路由合并成asyncRouterMap。
  */
-export const asyncRouterMap = tempAsyncRouterMap.concat(sadminRouter).concat(cadminRouter).concat(normalRouter).concat(studentRouter)
+export const asyncRouterMap = tempAsyncRouterMap
+  .concat(sadminRouter)
+  .concat(cadminRouter)
+  .concat(normalRouter)
+  .concat(studentRouter)
 
 
 export default new Router({
